@@ -18,7 +18,7 @@ En el servidor, con una cuenta que pueda usar `sudo`:
 ```sh
 git clone https://github.com/Virtual-IA-Technologies/Free-hosting-panel.git
 cd Free-hosting-panel
-git checkout v1.3.0
+git checkout v1.3.1
 sudo python3 scripts/install.py --dry-run --default-theme medium
 sudo python3 scripts/install.py --default-theme medium
 ```
@@ -74,9 +74,13 @@ sudo python3 scripts/access-service.py webmail --port 2096
 
 Esto requiere el servicio PHP-FPM, certificado y Roundcube nativos. No añade reglas de firewall salvo que se pida expresamente con la opción correspondiente. Cambia 2096 por tu puerto. El controlador permite recursos estáticos de skins/plugins/program; bloquea otras rutas PHP y configuración privada. Conserva la ruta de respaldo mostrada por cada instalador. Para retirar el tema usa `sudo python3 scripts/install-webmail-theme.py --restore /opt/virtual-ia-panel/webmail-theme-backups/FECHA`; el listener tiene su reversión propia en [accesos por puerto](service-access.md).
 
+## Versiones y actualizaciones
+
+Abre **Panel → Versiones y actualizaciones**. La pestaña **Software** consulta los paquetes instalados y candidatos de web, base de datos, correo, DNS y seguridad; **PHP y extensiones** permite preparar instalaciones en paralelo y cambios de módulos; **Historial** muestra las operaciones. Primero se prepara un plan y después se confirma su ejecución. Requiere el gestor opcional descrito arriba. **Actualizaciones de Hestia** es una pantalla distinta y solo lista los paquetes internos del panel. Instalar VIP no actualiza PHP ni los servicios automáticamente.
+
 ## Reiniciar servicios
 
-Como administrador, abre **Panel → Estado de los servicios** y usa **Reiniciar** en el servicio correspondiente. Se conserva la confirmación, el token y los permisos de Hestia. No requiere instalar el gestor opcional, Node ni una terminal. Reinicia solo el servicio necesario; hacerlo puede interrumpir brevemente sus conexiones.
+Como administrador, abre **Panel → Estado del servidor** y usa **Reiniciar** en el servicio correspondiente. Se conserva la confirmación, el token y los permisos de Hestia. No requiere instalar el gestor opcional, Node ni una terminal. Reinicia solo el servicio necesario; hacerlo puede interrumpir brevemente sus conexiones.
 
 Para mantener una instalación ligera, basta el instalador visual: usa recursos estáticos compilados y no añade un proceso residente. El gestor de paquetes y el tema webmail son opcionales e independientes. Node solo se utiliza en desarrollo o CI, fuera del VPS.
 

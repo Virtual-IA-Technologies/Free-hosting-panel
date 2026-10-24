@@ -1,4 +1,12 @@
-﻿# Estado y continuidad — VIP
+# Estado y continuidad — VIP
+
+## Entrega 1.3.1 — 24/10/2026
+
+- Estado del servidor y Versiones y actualizaciones visibles juntos en Panel. La pantalla nativa de Hestia explica su alcance y enlaza al gestor de software. Cabeceras legibles en temas claros.
+- Desplegado con respaldo; probado en sesión administrativa real el recorrido Hestia → gestor → PHP y extensiones, nueve grupos de software, móvil y ausencia de errores JavaScript. No se instalaron ni actualizaron paquetes.
+- Recursos estáticos; no se añaden procesos ni sondeos con estos accesos. Instalación y actualización de paquetes siguen siendo operaciones separadas y confirmadas.
+- Migración pendiente: faltan dominios/origen, volumen real y compatibilidad. Antes de cambiar DNS, comprobar restauración de respaldo, correo real y funcionamiento de cada aplicación.
+
 
 ## Entrega 1.3.0 — 24/10/2026
 

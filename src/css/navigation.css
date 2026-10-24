@@ -127,3 +127,6 @@
 .via-shell .vip-service-control span{display:inline;font-size:11px}
 .via-shell .vip-service-control:hover{background:var(--vip-hover)}
 .via-shell.page-server .units-table-row-actions .vip-service-action{display:inline-flex}
+.vip-server-shortcuts{margin:0 28px 22px;padding:14px 18px;border:1px solid var(--vip-border);border-radius:8px;background:var(--vip-surface);color:var(--vip-text)}
+.vip-server-shortcuts nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+:root:is([data-via-theme="light"],[data-via-theme="medium"]) .via-shell .units-table-header .units-table-cell{color:var(--vip-heading)}

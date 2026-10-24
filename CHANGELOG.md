@@ -1,5 +1,12 @@
 # Cambios
 
+## 1.3.1 — 2026-10-24
+
+- Estado del servidor y Versiones y actualizaciones juntos en Panel; acceso directo desde la pantalla nativa de actualizaciones de Hestia, explicando su alcance.
+- Accesos de servicios, software y Hestia sin nuevas consultas ni procesos; cabeceras de tablas legibles en temas claros.
+- Guía explícita de actualizaciones: PHP/extensiones, software e historial, con plan y confirmación; instalar la interfaz no actualiza paquetes.
+
+
 ## 1.3.0 — 2026-10-24
 
 - Pestañas accesibles en nueve formularios de configuración, incluidos Servidor, planes, marca blanca y opciones avanzadas de cuentas, dominios, DNS, SQL y correo. Se conservan campos, tokens, orden de envío y controles condicionales nativos.

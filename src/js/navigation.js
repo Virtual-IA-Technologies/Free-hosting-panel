@@ -20,7 +20,8 @@
   const groups = context.admin ? [
     ['Panel', [
       ['Inicio del servidor', '/list/user/#inicio', 'th-large', 'Resumen y herramientas del servidor'],
-      ['Estado de los servicios', '/list/server/', 'server', 'Estado y reinicio de los servicios instalados']]],
+      ['Estado del servidor', '/list/server/', 'server', 'Estado y reinicio de los servicios instalados'],
+      ['Versiones y actualizaciones', '/list/server/#vip-software', 'sync', 'Actualizar PHP, extensiones, MariaDB, Exim y demás software instalado']]],
     ['Cuentas y planes', [
       ['Enumerar las cuentas', '/list/user/#cuentas', 'users', 'Usuarios, cuotas y accesos de hosting'],
       ['Crear una nueva cuenta', '/add/user/', 'user-plus', 'Alta de una cuenta de alojamiento'],
@@ -28,9 +29,8 @@
     ['Configuración del servidor', [
       ['Opciones del servidor', '/edit/server/', 'cog', 'Hostname, PHP, correo, seguridad y respaldos'],
       ['Direcciones IP', '/list/ip/', 'network-wired', 'Direcciones disponibles y asignaciones'],
-      ['Actualizaciones', '/list/updates/', 'sync', 'Paquetes y actualizaciones del sistema']]],
+      ['Actualizaciones de Hestia', '/list/updates/', 'sync', 'Actualizaciones internas del panel Hestia']]],
     ['Salud del sistema', [
-      ['Versiones y actualizaciones', '/list/server/#vip-software', 'sync', 'Software, PHP, extensiones e historial del gestor opcional'],
       ['CPU y carga del servidor', '/list/server/?cpu', 'microchip', 'Información del procesador y carga'],
       ['Uso de memoria', '/list/server/?mem', 'memory', 'Memoria física y swap'],
       ['Uso de disco', '/list/server/?disk', 'hdd', 'Espacio y particiones del servidor'],

@@ -1,3 +1,7 @@
+# Validación 1.3.1
+
+Sesión administrativa real: acceso desde Actualizaciones de Hestia al gestor, nueve grupos de paquetes, PHP y extensiones, móvil y cero errores JavaScript. Correspondencia de recursos desplegados y compilados comprobada; no se aplicaron actualizaciones.
+
 # Validación 1.3.0
 
 Compilación reproducible, dos pruebas del instalador, 18 del broker y controles del endpoint con fixtures: correctos. Interfaz simulada del gestor y pestañas: correctas. La prueba autenticada sobre Hestia real verificó once pestañas, campos/tokens, móvil, Alpine, inventario, rechazo anónimo, CSRF y actor falsificado; no instaló paquetes ni actualizó índices. Los recursos desplegados coinciden con los compilados y los cuatro accesos HTTPS son válidos.

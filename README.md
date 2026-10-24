@@ -4,16 +4,16 @@ Panel de administración con identidad Virtual IA, construido como una extensió
 
 Login grafito con usuario y contraseña juntos, recuperación nativa y [servicios por puertos independientes](docs/service-access.md). Los servicios adicionales son opcionales y se provisionan expresamente; instalar el tema no abre puertos ni crea cuentas.
 
-La versión 1.3.0 incorpora [pestañas de configuración](docs/configuration-tabs.md) y un [gestor administrativo opcional](docs/software-manager.md) para versiones, PHP y extensiones. El gestor tiene instalación separada y conserva autenticación, roles y CSRF nativos. Su estado de validación y publicación figura en [continuidad](docs/PENDIENTES_Y_CONTINUIDAD.md).
+La versión 1.3.1 incorpora [pestañas de configuración](docs/configuration-tabs.md) y un [gestor administrativo opcional](docs/software-manager.md) para versiones, PHP y extensiones. El gestor tiene instalación separada y conserva autenticación, roles y CSRF nativos. Su estado de validación y publicación figura en [continuidad](docs/PENDIENTES_Y_CONTINUIDAD.md).
 
 ## Instalación
 
-Versión 1.3.0. Los artefactos optimizados están en `dist`; el servidor no necesita Node. Para modificar recursos: `npm ci`, `npm run build`, `npm run check` y `npm run test:installer` en el equipo de desarrollo.
+Versión 1.3.1. Los artefactos optimizados están en `dist`; el servidor no necesita Node. Para modificar recursos: `npm ci`, `npm run build`, `npm run check` y `npm run test:installer` en el equipo de desarrollo.
 
 Requiere HestiaCP 1.10.5, Python 3.10 o posterior, el cargador `web/js/custom_scripts` y FileGator instalado en `web/fm/dist`. El instalador comprueba la estructura compatible de FileGator antes de modificar archivos. Clona la versión publicada en el servidor y ejecuta como root:
 
 ```sh
-git clone --branch v1.3.0 --depth 1 https://github.com/Virtual-IA-Technologies/Free-hosting-panel.git
+git clone --branch v1.3.1 --depth 1 https://github.com/Virtual-IA-Technologies/Free-hosting-panel.git
 cd Free-hosting-panel
 python3 scripts/install.py --dry-run --default-theme medium
 python3 scripts/install.py --default-theme medium
@@ -50,7 +50,7 @@ En las listas compatibles, doble clic abre la edición disponible o el detalle; 
 
 Durante la recarga aparece un indicador CSS de «Cargando…», sin descargar un GIF. Si el recurso VIP falla, el panel nativo vuelve a estar disponible tras ocho segundos. El modo sin JavaScript conserva la interfaz nativa.
 
-- Inicio: `/list/user/#inicio`; cuentas: `/list/user/#cuentas`. Estado de los servicios aparece debajo de Inicio en Panel; Reiniciar conserva la acción, token y confirmación de Hestia para cada servicio instalado.
+- Inicio: `/list/user/#inicio`; cuentas: `/list/user/#cuentas`. Estado del servidor aparece debajo de Inicio en Panel; Reiniciar conserva la acción, token y confirmación de Hestia para cada servicio instalado.
 - Configuración usa pestañas debajo de la barra de acciones, ancho completo y un solo título. Correo incluye una guía de DKIM, SPF, DMARC y PTR; este último se configura en el proveedor de la IP. Consulta la guía contextual «Entrega de correo» en la lista y edición de dominios de correo.
 - Roundcube tiene un [estilo opcional](docs/installation.md#estilo-opcional-de-webmail) y soporte para sus recursos `static.php`; no cambia la autenticación ni crea buzones.
 - Cuentas: crear, administrar recursos, suspender o eliminar mediante los controles nativos. Los accesos de correo, web y bases de datos entran en el contexto de la cuenta elegida mediante la suplantación nativa protegida por token.

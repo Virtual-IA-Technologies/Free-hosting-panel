@@ -4,6 +4,15 @@
   const context=JSON.parse(el.textContent);if(!context.admin)return;
   const s=context.server||{},content=document.querySelector('.app-content');
   const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
+  if(content && ['/list/server/','/list/updates/'].includes(location.pathname)){
+    const shortcuts=node('aside','vip-server-shortcuts');
+    shortcuts.append(node('p','',location.pathname==='/list/updates/'?'Esta pantalla muestra solo las actualizaciones internas de Hestia. Para PHP, extensiones, bases de datos y correo, abre Versiones y actualizaciones.':'Consulta versiones, administra PHP y extensiones o reinicia únicamente el servicio que necesitas.'));
+    const nav=node('nav');nav.setAttribute('aria-label','Administración del servidor');
+    for(const [label,href] of [['Servicios y reinicio','/list/server/'],['Versiones y actualizaciones','/list/server/#vip-software'],['Actualizaciones de Hestia','/list/updates/']]){
+      const a=node('a','button button-secondary',label);a.href=href;nav.append(a);
+    }
+    shortcuts.append(nav);content.querySelector('.via-page-heading')?.after(shortcuts);
+  }
   if(location.pathname==='/list/server/' && content){
     // Expose the existing native controls, including their tokens and confirmations.
     content.querySelectorAll('.js-unit .units-table-row-actions a[href]').forEach(a=>{
