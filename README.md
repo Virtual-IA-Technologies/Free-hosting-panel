@@ -4,7 +4,7 @@ Panel de administración con identidad Virtual IA, construido como una extensió
 
 ## Instalación
 
-Versión 0.4.0. Los artefactos optimizados están en `dist`; el servidor no necesita Node. Para modificar recursos: `npm ci`, `npm run build` y `npm run check` en el equipo de desarrollo.
+Versión 0.4.1. Los artefactos optimizados están en `dist`; el servidor no necesita Node. Para modificar recursos: `npm ci`, `npm run build` y `npm run check` en el equipo de desarrollo.
 
 Requiere HestiaCP instalado y su cargador `web/js/custom_scripts`. Copiar este proyecto al servidor y ejecutar como root:
 
@@ -32,6 +32,14 @@ python3 scripts/uninstall.py /opt/virtual-ia-panel/backups/FECHA
 - Personalizar apariencia (engranaje junto al tema): escala de 80 a 125 %, imágenes independientes para menú/contenido, intensidad y restablecimiento. Los fondos se optimizan en el navegador y no se envían al servidor. Se aceptan JPG, PNG y WebP; el almacenamiento es local a cada usuario/navegador.
 - Indicadores específicos por vista: Disco muestra particiones, inodos y tasas de I/O cuando están presentes en el informe; Memoria muestra RAM y swap; CPU muestra carga de 1, 5 y 15 minutos; Red muestra contadores por interfaz. La carga no equivale a utilización de CPU. Los valores se leen al abrir la página y el detalle técnico permanece visible. Las cuotas de cuentas con límite incluyen barras de uso.
 - El gestor de archivos se abre dentro del panel, conservando navegación, sesión y permisos nativos. Se carga únicamente al abrir Archivos y documentos.
+- Archivos incluye ancho completo, cabecera única, carpetas de la ubicación actual, árbol nativo, búsqueda, subir nivel, vistas lista/cuadrícula y acciones nativas de edición, copia, movimiento, compresión y permisos. La mejora se descarga únicamente al abrir Archivos; su vista se recuerda por usuario y navegador.
+- Panel incluye accesos frecuentes a Dominios y Bases de datos. Cada dominio tiene un acceso SSL / HTTPS que abre su edición nativa; cada cuenta entra con sus propias credenciales y mantiene el aislamiento de sus recursos.
+
+## Reutilizar en otro servidor
+
+El proyecto no incluye usuarios, cuentas reales, dominios, direcciones IP ni credenciales. La navegación usa rutas relativas y el contexto autenticado de Hestia; el perfil API usa el origen actual. El instalador conserva el administrador principal, hostname, IP, DNS y certificados existentes. `vipadmin` puede usarse como nombre de administrador al instalar Hestia, pero esta extensión no lo crea ni fija una contraseña. Los fondos personales se guardan en el navegador y no forman parte de la plantilla.
+
+Para un servidor nuevo, instalar primero Hestia con sus propios parámetros y después esta extensión. Mantener las copias de despliegues y clientes fuera de este repositorio. No ejecutar scripts de limpieza de un servidor como parte de la instalación de la plantilla.
 
 ## Arquitectura y límites
 

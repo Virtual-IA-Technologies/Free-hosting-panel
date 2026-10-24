@@ -52,6 +52,10 @@
     const part = u.pathname.split('/').filter(Boolean)[1]?.toUpperCase();
     if (labels[part]) hostingGroup[1].push([labels[part][0], u.pathname + u.search, labels[part][1], a.querySelector('.main-menu-stats')?.textContent.replace(/\s+/g, ' ').trim() || 'Administrar este servicio']);
   });
+  for(const [path,label] of [['/list/web/','Dominios'],['/list/db/','Bases de datos']]){
+    const item=hostingGroup[1].find(x=>new URL(x[1],location.origin).pathname===path);
+    if(item)groups[0][1].push([label,item[1],item[2],item[3]]);
+  }
   const shellPath=context.admin?'/list/user/':new URL(hostingGroup[1][0]?.[1]||'/list/web/',location.origin).pathname;
   if(nativeFileLink){groups[0][1].push(['Archivos y documentos',shellPath+'#archivos','folder-open','Explorar y gestionar los archivos de esta cuenta']);nativeFileLink.href=shellPath+'#archivos';}
   if(context.admin){const index=groups.findIndex(g=>g[0]==='Alojamiento');if(index>2)groups.splice(2,0,groups.splice(index,1)[0]);}
@@ -95,6 +99,7 @@
     for(const key of ['bg','surface','surface-alt','text','heading','border','input','link','hover'])colors[key]=computed.getPropertyValue('--vip-'+key).trim();
     style.textContent=`body{background:${colors.bg}!important;color:${colors.text}!important}a{color:${colors.link}}.table,.table td,.table th{color:${colors.text};border-color:${colors.border}!important}.table-striped>tbody>tr:nth-of-type(odd),.table-hover>tbody>tr:hover{background:${colors.hover}!important}.dropdown-menu,.modal-content,.card,.breadcrumb,.navbar{background:${colors.surface}!important;color:${colors.text}!important;border-color:${colors.border}!important}.form-control,.form-select,select,input:not([type=checkbox]){background:${colors.input}!important;color:${colors.text}!important;border-color:${colors.border}!important}h1,h2,h3,h4,label{color:${colors.heading}}`;
     doc.querySelectorAll('a[href]').forEach(a=>{try{const u=new URL(a.href);if(u.origin===location.origin && /^\/(list|edit|logout)\//.test(u.pathname))a.target='_top';}catch{}});
+    window.dispatchEvent(new CustomEvent('vip:files-ready',{detail:{doc,colors}}));
   };
   window.addEventListener('vip:appearance',styleFrame);
   if (context.admin && /^\/list\/user\/?$/.test(location.pathname)) {
@@ -163,7 +168,10 @@
     const home=context.admin && /^\/list\/user\/?$/.test(location.pathname) && location.hash!=='#cuentas' && !isFiles && !isDevelopers;
     document.body.classList.toggle('via-is-developers',isDevelopers);
     document.body.classList.toggle('via-is-files',isFiles);
-    if(isFiles && !fileFrame){fileFrame=node('iframe','vip-file-frame');fileFrame.title='Archivos y documentos';fileFrame.src='/fm/';fileFrame.addEventListener('load',styleFrame);files.append(fileFrame);}
+    if(isFiles && !fileFrame){
+      const enhancement=node('script');enhancement.src='/js/virtualia/files.min.js?v=0.4.1';enhancement.onload=styleFrame;document.head.append(enhancement);
+      fileFrame=node('iframe','vip-file-frame');fileFrame.title='Archivos y documentos';fileFrame.src='/fm/';fileFrame.addEventListener('load',styleFrame);files.append(fileFrame);
+    }
     document.body.classList.toggle('via-is-home',home);
     let current;
     searchable.forEach(x=>{

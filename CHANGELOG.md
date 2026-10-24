@@ -1,5 +1,13 @@
 # Cambios
 
+## 0.4.1
+
+- Dominios y Bases de datos añadidos al grupo Panel.
+- Gestor de archivos a ancho completo, sin cabecera duplicada, con carpetas laterales, árbol nativo, búsqueda y vistas lista/cuadrícula.
+- Mejora de archivos cargada bajo demanda; acciones y permisos nativos conservados.
+- Acceso SSL / HTTPS por dominio y explicación del aislamiento por cuenta.
+- Documentación de portabilidad sin IP, hostname, cuentas ni credenciales preconfiguradas.
+
 ## 0.4.0
 
 - Recursos minificados y agrupados: dos solicitudes propias por pantalla; login separado.

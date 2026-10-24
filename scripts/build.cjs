@@ -6,6 +6,7 @@ const zlib=require('node:zlib');
 const root=path.resolve(__dirname,'..'),check=process.argv.includes('--check');
 const sets={
  'panel.min.js':['js/appearance.js','js/navigation.js','js/resources.js','js/tools.js'],
+ 'files.min.js':['js/files.js'],
  'login.min.js':['js/appearance.js','js/login.js'],
  'panel.min.css':['css/appearance.css','css/navigation.css'],
  'login.min.css':['css/appearance.css'],

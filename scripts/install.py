@@ -19,6 +19,7 @@ MAPPING = {
     'dist/panel.min.css': 'web/css/virtualia/panel.min.css',
     'dist/login.min.css': 'web/css/virtualia/login.min.css',
     'dist/panel.min.js': 'web/js/virtualia/panel.min.js',
+    'dist/files.min.js': 'web/js/virtualia/files.min.js',
     'dist/login.min.js': 'web/js/virtualia/login.min.js',
     'src/php/virtualia-navigation.php': 'web/js/custom_scripts/virtualia-navigation.php',
 }

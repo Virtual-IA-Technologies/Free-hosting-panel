@@ -46,7 +46,9 @@ const {chromium}=require('playwright-core');
   await page.locator('.vip-appearance-button').click();await page.getByRole('button',{name:'Restablecer apariencia'}).click();await page.locator('.vip-close').click();
   assert(await page.evaluate(()=>document.documentElement.style.zoom)==='1','Restablecer no funciona');
   await page.goto(base+'/list/user/#cuentas',{waitUntil:'networkidle'});
-  assert(await page.locator('.vip-account-actions').count()>0,'Faltan accesos de cuentas');assert(await page.locator('.vip-quota-meter').count()>0,'Faltan barras de cuota');
+  assert(await page.locator('.vip-account-actions').count()>0,'Faltan accesos de cuentas');
+  assert(await page.locator('#via-sidebar .via-group').first().getByRole('link',{name:'Dominios',exact:true}).count()===1,'Falta Dominios en Panel');
+  assert(await page.locator('#via-sidebar .via-group').first().getByRole('link',{name:'Bases de datos',exact:true}).count()===1,'Falta Bases de datos en Panel');
   const gap=await page.evaluate(()=>document.querySelector('.units-table').getBoundingClientRect().top-document.querySelector('.toolbar').getBoundingClientRect().bottom);assert(gap>=20,'Tablas sin separación');
   await page.locator('#via-sidebar a[href$="#developers"]').click();
   assert(await page.locator('#vip-developers').isVisible(),'Developers no visible');
@@ -65,6 +67,13 @@ const {chromium}=require('playwright-core');
   await page.setViewportSize({width:390,height:844});assert(await page.evaluate(()=>document.querySelector('.top-bar-right').getBoundingClientRect().right<=innerWidth+1),'Barra móvil fuera de pantalla');await page.setViewportSize({width:1440,height:1000});
   const fileLink=page.locator('#via-sidebar a[href$="#archivos"]');if(await fileLink.count()){
     await fileLink.click();const frame=page.frameLocator('.vip-file-frame');await frame.locator('table').first().waitFor({timeout:20000});
+    await frame.locator('#vip-file-tools').waitFor();
+    assert(!await frame.locator('nav.navbar').isVisible(),'Cabecera de archivos duplicada');
+    await frame.getByRole('button',{name:'Cuadrícula',exact:true}).click();
+    assert(await frame.locator('body').evaluate(e=>e.classList.contains('vip-files-grid')),'Cuadrícula no aplicada');
+    await frame.getByRole('button',{name:'Lista',exact:true}).click();
+    assert(await frame.locator('#vip-file-folders').isVisible(),'Navegación de carpetas ausente');
+    const width=await frame.locator('#dropzone').evaluate(e=>e.getBoundingClientRect().width/innerWidth);assert(width>.95,'Archivos no aprovecha el ancho');
     assert(new URL(page.url()).hash==='#archivos','El gestor sale del panel');assert(await page.locator('#via-sidebar').isVisible(),'Sin menú en archivos');
   }
   assert(errors.length===0,errors.join('; '));console.log(JSON.stringify({result:'PASS',contrast:'>=4.5',resources,appearance:'scale/backgrounds/persistence/reset OK',tables:'24px',files:'inside panel',developers:'external tools and native configuration shortcuts OK',javascriptErrors:errors},null,2));

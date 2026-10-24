@@ -31,8 +31,18 @@
   document.querySelector('.via-page-heading')?.after(warning);
  }
  if(location.pathname==='/edit/web/'){
+  if(location.hash==='#vip-ssl')document.querySelector('#v_ssl')?.closest('.form-check')?.scrollIntoView({block:'center'});
   const selector=document.querySelector('#v_backend_template');
   if(selector){const note=make('aside','PHP de este dominio: esta selección es independiente de la versión predeterminada del servidor. Los límites personalizados requieren un pool o plantilla propios.','vip-account-hint');selector.closest('details')?.before(note);}
+ }
+ if(location.pathname==='/list/web/'){
+  const hint=make('aside','Cada dominio tiene su propio certificado SSL. Abre SSL / HTTPS para habilitar Let’s Encrypt, instalar un certificado propio o forzar HTTPS. El DNS del dominio debe apuntar a este servidor para validar Let’s Encrypt.','vip-account-hint');
+  document.querySelector('.via-page-heading')?.after(hint);
+  document.querySelectorAll('.js-unit').forEach(row=>{
+   const edit=[...row.querySelectorAll('a[href]')].find(a=>new URL(a.href,location.origin).pathname==='/edit/web/');
+   const cell=row.querySelector('.units-table-heading-cell');
+   if(edit&&cell){const shortcuts=make('div',null,'vip-account-actions');const a=link('SSL / HTTPS',edit.getAttribute('href').split('#')[0]+'#vip-ssl');shortcuts.append(a);cell.append(shortcuts);}
+  });
  }
  const content=document.querySelector('.app-content');
  if(location.pathname==='/list/user/' && content){
