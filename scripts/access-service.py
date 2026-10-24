@@ -43,6 +43,16 @@ if args.service=='accounts':
 else:
     roundcube=Path('/var/lib/roundcube')
     document_root=roundcube/'public_html' if (roundcube/'public_html/index.php').is_file() else roundcube
+    static_handler=''
+    if (document_root/'static.php').is_file():
+        static_handler=fr'''    location ~ ^/static\.php(?<vip_static_path>/(?:skins|plugins|program)/.*)$ {{
+        include /etc/nginx/fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME {document_root}/static.php;
+        fastcgi_param SCRIPT_NAME /static.php;
+        fastcgi_param PATH_INFO $vip_static_path;
+        fastcgi_pass unix:/run/php/www.sock;
+    }}
+'''
     for required in [document_root/'index.php',Path('/run/php/www.sock'),root/'ssl/certificate.crt',root/'ssl/certificate.key']:
         if not required.exists():p.error('Missing native webmail prerequisite: '+str(required))
     target=Path('/etc/nginx/conf.d/vip-webmail.conf')
@@ -65,7 +75,7 @@ server {{
         fastcgi_param SCRIPT_FILENAME {document_root}/index.php;
         fastcgi_pass unix:/run/php/www.sock;
     }}
-    location ~ ^/(config|temp|logs|bin|SQL|installer|vendor|tests)(/|$) {{ return 404; }}
+{static_handler}    location ~ ^/(config|temp|logs|bin|SQL|installer|vendor|tests)(/|$) {{ return 404; }}
     location ~ /\. {{ return 404; }}
     location ~ \.php(/|$) {{ return 404; }}
     location ~* \.(css|js|png|gif|ico|jpe?g|svg|woff2?|ttf)$ {{ try_files $uri =404; }}

@@ -1,3 +1,9 @@
+# Validación 1.3.0
+
+Compilación reproducible, dos pruebas del instalador, 18 del broker y controles del endpoint con fixtures: correctos. Interfaz simulada del gestor y pestañas: correctas. La prueba autenticada sobre Hestia real verificó once pestañas, campos/tokens, móvil, Alpine, inventario, rechazo anónimo, CSRF y actor falsificado; no instaló paquetes ni actualizó índices. Los recursos desplegados coinciden con los compilados y los cuatro accesos HTTPS son válidos.
+
+El reinicio conserva la ruta y confirmación nativas; se verifica su visibilidad sin ejecutar reinicios innecesarios. La cuenta normal y suplantación de sesión del gestor opcional siguen pendientes en vivo; se verificaron con fixtures. No se crearon cuentas de prueba. Véase [continuidad](PENDIENTES_Y_CONTINUIDAD.md).
+
 # Validación de la versión 1.2.0
 
 Revisión del 24 de octubre de 2026 sobre HestiaCP 1.10.5.

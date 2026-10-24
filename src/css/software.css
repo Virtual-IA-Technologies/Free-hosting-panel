@@ -1,0 +1,16 @@
+.vip-software[hidden],.vip-software [hidden],.vip-software-native-hidden{display:none!important}
+.vip-software{max-width:1400px;margin:25px auto;padding:0 22px;color:var(--vip-text)}
+.vip-software h1,.vip-software h2{color:var(--vip-heading)}
+.vip-software h1{font-size:25px}.vip-software h2{font-size:18px}
+.vip-software p{line-height:1.7;overflow-wrap:anywhere}
+.vip-software-actions{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
+.vip-software a{color:var(--vip-link)}
+.vip-software .button{margin:4px;white-space:normal}.vip-software .button:disabled{opacity:.5;cursor:default}
+.vip-software-card,.vip-software-plan,.vip-software-job{padding:20px;margin:16px 0;border:1px solid var(--vip-border);border-radius:9px;background:var(--vip-surface)}
+.vip-software-table{max-width:100%;overflow-x:auto}
+.vip-software table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}
+.vip-software td,.vip-software th{padding:10px;border-bottom:1px solid var(--vip-border);overflow-wrap:anywhere}
+.vip-software th{color:var(--vip-heading)}
+.vip-software pre{max-height:350px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;padding:12px;background:var(--vip-input);color:var(--vip-text)}
+.vip-software label{display:inline-block;line-height:1.7}.vip-software input[type=checkbox]{margin-right:6px}
+@media(max-width:700px){.vip-software{padding:0 10px}.vip-software-card,.vip-software-plan,.vip-software-job{padding:12px}.vip-software .button{min-height:44px}.vip-software td,.vip-software th{min-width:110px}}

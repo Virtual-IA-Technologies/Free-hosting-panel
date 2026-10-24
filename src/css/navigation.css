@@ -122,3 +122,8 @@
 .vip-tools-form input{background:var(--vip-input);color:var(--vip-text);border:1px solid var(--vip-border);padding:12px;border-radius:6px;width:100%;box-sizing:border-box}
 .vip-external-tool{display:flex;align-items:center;justify-content:space-between;gap:10px}
 @media(max-width:1000px){.vip-developers{grid-template-columns:1fr}}
+/* Service actions remain native links with native confirmation and CSRF. */
+.via-shell .vip-service-control{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--vip-border);background:var(--vip-raised);padding:6px 9px;white-space:nowrap}
+.via-shell .vip-service-control span{display:inline;font-size:11px}
+.via-shell .vip-service-control:hover{background:var(--vip-hover)}
+.via-shell.page-server .units-table-row-actions .vip-service-action{display:inline-flex}

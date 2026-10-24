@@ -5,6 +5,18 @@
   const s=context.server||{},content=document.querySelector('.app-content');
   const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
   if(location.pathname==='/list/server/' && content){
+    // Expose the existing native controls, including their tokens and confirmations.
+    content.querySelectorAll('.js-unit .units-table-row-actions a[href]').forEach(a=>{
+      const action=new URL(a.href,location.origin).pathname;
+      const label={'/restart/service/':'Reiniciar'}[action];
+      if(!label)return;
+      a.classList.add('vip-service-control');
+      a.closest('.units-table-row-action')?.classList.add('vip-service-action');
+      const text=a.querySelector('span');
+      if(text){text.classList.remove('u-hide-desktop');text.textContent=label;}
+      else a.append(node('span','',label));
+      a.setAttribute('aria-label',label+' '+(a.closest('.js-unit').dataset.sortName||'servicio'));
+    });
     const params=new URLSearchParams(location.search),view=['disk','mem','cpu','net','web','dns','mail'].find(k=>params.has(k))||'overview';
     const panel=node('section','vip-resource-panel');panel.dataset.resourceView=view;let meters;
     const group=title=>{panel.append(node('h2','vip-resource-heading',title));meters=node('div','vip-resource-meters');panel.append(meters);};

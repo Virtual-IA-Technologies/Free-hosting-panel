@@ -18,7 +18,7 @@ En el servidor, con una cuenta que pueda usar `sudo`:
 ```sh
 git clone https://github.com/Virtual-IA-Technologies/Free-hosting-panel.git
 cd Free-hosting-panel
-git checkout v1.2.2
+git checkout v1.3.0
 sudo python3 scripts/install.py --dry-run --default-theme medium
 sudo python3 scripts/install.py --default-theme medium
 ```
@@ -40,6 +40,45 @@ Opciones independientes:
 | `--dry-run` | Verificar compatibilidad sin cambiar archivos |
 
 La instalación conserva usuarios, contraseñas, hostname, IP, dominios, DNS y certificados. Las preferencias de apariencia del panel se conservan por usuario. El login usa su propio tema y el estilo nativo indicado. El instalador no limpia datos ni provisiona cuentas. Para activar servicios y firewall por separado, consulta [accesos por puerto](service-access.md).
+
+## Módulos opcionales
+
+La instalación anterior basta para la interfaz, pestañas, navegación y controles nativos de servicios. No instala Node, terminal, paquetes de correo ni motores SQL. Reiniciar un servicio requiere confirmar su acción nativa; no se reinicia nada durante la instalación visual.
+
+### Gestor de versiones y PHP
+
+Solo si necesitas administrar paquetes desde el panel:
+
+```sh
+sudo python3 scripts/install-software.py --dry-run
+sudo python3 scripts/install-software.py
+```
+
+Añade un servicio Python local con socket Unix, sin puerto público. Usa el Python del sistema, no requiere pip ni Node. Las consultas se hacen bajo demanda; solo se consulta progreso mientras hay un trabajo visible. No aplica actualizaciones automáticamente. Consulta [operaciones, seguridad y reversión](software-manager.md). Es independiente del instalador visual.
+
+### Estilo opcional de webmail
+
+Requiere Roundcube moderno ya instalado y accesible:
+
+```sh
+sudo python3 scripts/install-webmail-theme.py --dry-run
+sudo python3 scripts/install-webmail-theme.py
+```
+
+Si webmail abre sin CSS/JS o logo y devuelve 404 en `/static.php/skins/`, regenera únicamente el listener de webmail usando su puerto elegido:
+
+```sh
+sudo python3 scripts/access-service.py webmail --port 2096 --dry-run
+sudo python3 scripts/access-service.py webmail --port 2096
+```
+
+Esto requiere el servicio PHP-FPM, certificado y Roundcube nativos. No añade reglas de firewall salvo que se pida expresamente con la opción correspondiente. Cambia 2096 por tu puerto. El controlador permite recursos estáticos de skins/plugins/program; bloquea otras rutas PHP y configuración privada. Conserva la ruta de respaldo mostrada por cada instalador. Para retirar el tema usa `sudo python3 scripts/install-webmail-theme.py --restore /opt/virtual-ia-panel/webmail-theme-backups/FECHA`; el listener tiene su reversión propia en [accesos por puerto](service-access.md).
+
+## Reiniciar servicios
+
+Como administrador, abre **Panel → Estado de los servicios** y usa **Reiniciar** en el servicio correspondiente. Se conserva la confirmación, el token y los permisos de Hestia. No requiere instalar el gestor opcional, Node ni una terminal. Reinicia solo el servicio necesario; hacerlo puede interrumpir brevemente sus conexiones.
+
+Para mantener una instalación ligera, basta el instalador visual: usa recursos estáticos compilados y no añade un proceso residente. El gestor de paquetes y el tema webmail son opcionales e independientes. Node solo se utiliza en desarrollo o CI, fuera del VPS.
 
 ## 3. Validar y empezar
 

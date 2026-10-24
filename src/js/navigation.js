@@ -18,17 +18,19 @@
   };
   const icon = name => { const e = node('i', `fas fa-${name}`); e.setAttribute('aria-hidden', 'true'); return e; };
   const groups = context.admin ? [
-    ['Panel', [['Inicio del servidor', '/list/user/#inicio', 'th-large', 'Resumen y herramientas del servidor']]],
+    ['Panel', [
+      ['Inicio del servidor', '/list/user/#inicio', 'th-large', 'Resumen y herramientas del servidor'],
+      ['Estado de los servicios', '/list/server/', 'server', 'Estado y reinicio de los servicios instalados']]],
     ['Cuentas y planes', [
       ['Enumerar las cuentas', '/list/user/#cuentas', 'users', 'Usuarios, cuotas y accesos de hosting'],
       ['Crear una nueva cuenta', '/add/user/', 'user-plus', 'Alta de una cuenta de alojamiento'],
       ['Administrar planes', '/list/package/', 'box', 'Límites y recursos de los planes']]],
     ['Configuración del servidor', [
       ['Opciones del servidor', '/edit/server/', 'cog', 'Hostname, PHP, correo, seguridad y respaldos'],
-      ['Estado de los servicios', '/list/server/', 'server', 'Servicios instalados y sus controles'],
       ['Direcciones IP', '/list/ip/', 'network-wired', 'Direcciones disponibles y asignaciones'],
       ['Actualizaciones', '/list/updates/', 'sync', 'Paquetes y actualizaciones del sistema']]],
     ['Salud del sistema', [
+      ['Versiones y actualizaciones', '/list/server/#vip-software', 'sync', 'Software, PHP, extensiones e historial del gestor opcional'],
       ['CPU y carga del servidor', '/list/server/?cpu', 'microchip', 'Información del procesador y carga'],
       ['Uso de memoria', '/list/server/?mem', 'memory', 'Memoria física y swap'],
       ['Uso de disco', '/list/server/?disk', 'hdd', 'Espacio y particiones del servidor'],
@@ -91,7 +93,7 @@
   let dashboard;
   const files=node('section','vip-files');files.id='vip-files';files.setAttribute('aria-label','Gestor de archivos');content.append(files);
   let fileStarted=false;
-  const footer=document.querySelector('.app-footer');if(footer){footer.append(node('span','vip-product-brand',' · '+(context.appName||'VIP - Virtual IA Panel')+' v1.2.2'));}
+  const footer=document.querySelector('.app-footer');if(footer){footer.append(node('span','vip-product-brand',' · '+(context.appName||'VIP - Virtual IA Panel')+' v1.3.0'));}
   if (context.admin && /^\/list\/user\/?$/.test(location.pathname)) {
     const hint=node('aside','vip-account-hint','Administra cada cuenta desde sus accesos directos. Para aumentar o reducir espacio, ajusta su plan en Recursos. ');
     const plans=node('a','','Administrar planes');plans.href='/list/package/';hint.append(plans);heading.after(hint);

@@ -1,0 +1,22 @@
+.vip-config-tabs{display:flex;gap:4px;max-width:100%;min-width:0;overflow-x:auto;overscroll-behavior-x:contain;border-bottom:1px solid var(--vip-border);margin:0 0 20px;padding:0 0 6px;scrollbar-width:thin}
+.via-shell .app-content.vip-config-page>.container{width:100%;max-width:none;box-sizing:border-box;padding:24px}
+.via-shell .app-content.vip-config-page .form-container{width:100%;max-width:none;box-sizing:border-box}
+.via-shell .app-content.vip-config-page .toolbar-inner{width:100%;max-width:none;box-sizing:border-box;padding-inline:24px}
+.via-shell .app-content.vip-config-page>.toolbar{display:block;height:auto;min-height:0}
+.via-shell .app-content.vip-config-page #main-form .form-container>h1{display:none}
+.via-shell .vip-config-toolbar-tabs{width:100%;box-sizing:border-box;margin:0;padding:8px 24px;border-top:1px solid var(--vip-border);border-bottom:0;background:var(--vip-surface-alt)}
+.via-shell .vip-config-toolbar-tabs [role=tab]{padding:7px 10px;border-color:var(--vip-border);background:var(--vip-raised);color:var(--vip-text);font-size:12px;line-height:1.4;border-radius:5px}
+.via-shell .vip-config-toolbar-tabs [role=tab][aria-selected=true]{background:var(--vip-hover);color:var(--vip-heading);border-color:var(--vip-link)}
+.via-shell .vip-config-toolbar-tabs [role=tab] i{margin-right:4px;color:var(--vip-link)}
+.vip-config-tabs [role=tab]{flex:0 0 auto;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--vip-muted);padding:11px 14px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
+.vip-config-tabs [role=tab][aria-selected=true]{background:var(--vip-hover);border-color:var(--vip-border);color:var(--vip-heading)}
+.vip-config-tabs [role=tab]:hover{color:var(--vip-heading);background:var(--vip-hover)}
+.vip-config-tabs [role=tab]:focus-visible,.vip-config-panel:focus-visible{outline:2px solid var(--vip-link);outline-offset:-2px}
+details.vip-config-panel[hidden]{display:none!important}
+details.vip-config-panel>summary{display:none}
+.vip-config-native-toggle{display:none!important}
+details.vip-config-panel{max-height:none;overflow:visible}
+details.vip-config-panel>.box-collapse-content,details.vip-config-panel>.collapse-content{max-height:none;overflow:visible}
+.vip-config-expanded>summary{list-style:none;cursor:default;font-weight:600}
+.vip-config-expanded>summary::marker,.vip-config-expanded>summary::after{display:none;content:none}
+@media(max-width:700px){.vip-config-tabs [role=tab]{min-height:44px;padding:11px}.vip-config-tabs{width:100%}.via-shell .app-content.vip-config-page>.container{padding:18px 14px}.via-shell .app-content.vip-config-page .toolbar-inner,.via-shell .vip-config-toolbar-tabs{padding-inline:14px}}

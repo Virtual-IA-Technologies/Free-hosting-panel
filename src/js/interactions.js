@@ -55,7 +55,7 @@
   const spinner=parsed.querySelector('.js-spinner')||node('div','js-spinner');body.append(spinner);
   const absoluteAction=new URL(form.getAttribute('action')||formURL.href,formURL);if(absoluteAction.origin!==location.origin)throw Error('El formulario no pertenece a este servidor.');form.action=absoluteAction.href;
   Object.defineProperty(form,'submit',{configurable:true,value:()=>send(form)});
-  const mount=()=>{root.append(body,footer);teardown=window.vipInitNativeForm(root,formURL.href);window.Alpine?.initTree(root);};
+  const mount=()=>{root.append(body,footer);teardown=window.vipInitNativeForm(root,formURL.href);window.Alpine?.initTree(root);window.vipInitTabs?.(root,formURL.pathname);};
   if(window.Alpine)window.Alpine.mutateDom(mount);else mount();
   dirty=posted&&Boolean(body.querySelector('.alert-danger,.alert-error'));setBusy(false);
   const focus=body.querySelector('.alert-danger,.alert-error,input:not([type=hidden]):not([disabled]),select:not([disabled]),textarea:not([disabled])');

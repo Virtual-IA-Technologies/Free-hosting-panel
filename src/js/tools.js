@@ -16,6 +16,19 @@
   '/list/ip/':'Direcciones del servidor: administra únicamente IP asignadas por tu proveedor y correctamente configuradas en la red. Cambiar un registro DNS no añade una IP al VPS ni cambia automáticamente la IP de un sitio.'
  };
  if(hints[location.pathname] && (context.admin || !['/list/ip/','/add/user/'].includes(location.pathname)))document.querySelector('.via-page-heading')?.after(make('aside',hints[location.pathname],'vip-account-hint'));
+ if(location.pathname==='/list/mail/' || location.pathname==='/edit/mail/'){
+  const guide=make('details',null,'vip-hosting-guide');guide.id='vip-mail-delivery';
+  guide.append(make('summary','Entrega de correo: DKIM, SPF, DMARC y DNS inverso'));
+  for(const text of [
+   'DKIM: abre Editar en el dominio de correo y activa la firma DKIM. En Registros DNS del dominio copia la clave pública generada por Hestia al DNS autoritativo; nunca publiques la clave privada.',
+   'SPF y DMARC: consulta Registros DNS del dominio y edita sus TXT en Zonas DNS o en tu proveedor externo. Mantén un único SPF que incluya todos tus remitentes. Empieza DMARC con monitorización y revisa sus informes antes de aplicar rechazo.',
+   'DNS inverso / PTR: configúralo en el proveedor de la IP del servidor. El PTR debe resolver al hostname de correo y su A/AAAA debe volver a esa misma IP. Una zona DNS local no modifica el PTR del proveedor.',
+   'Comprueba que hostname y saludo SMTP (HELO/EHLO) sean coherentes, el certificado SMTP sea válido, el puerto saliente 25 esté permitido y los MX apunten al destino previsto. Si tu proveedor bloquea la salida o su reputación es insuficiente, configura un relay SMTP en Editar dominio.',
+   'Estas opciones ayudan a autenticar el correo; la reputación de la IP/dominio, el contenido y las políticas del destinatario también determinan la bandeja de entrada. Verifica un envío real y sus cabeceras antes de migrar buzones.'
+  ])guide.append(make('p',text));
+  guide.append(link('Configurar registros de la zona','/list/dns/'),link('Referencia de correo Hestia','https://hestiacp.com/docs/server-administration/email'));
+  document.querySelector('.via-page-heading')?.after(guide);
+ }
  if(location.pathname==='/edit/web/'){
   if(location.hash==='#vip-ssl')document.querySelector('#v_ssl')?.closest('.form-check')?.scrollIntoView({block:'center'});
   const selector=document.querySelector('#v_backend_template');
@@ -53,8 +66,8 @@
   const input=document.querySelector(spec[0]) || (location.hash==='#vip-mail'?document.querySelector('[name="v_mail"]'):null);
   if(!input)return;
   const details=input.closest('details');if(!details)return;
-  details.open=true;
-  hint=make('aside',spec[1],'vip-account-hint');details.before(hint);
+  window.vipRevealField?.(input);details.open=true;
+  hint=make('aside',spec[1],'vip-account-hint');details.querySelector(':scope > summary')?.after(hint);
   requestAnimationFrame(()=>hint.scrollIntoView({block:'center',behavior:'instant'}));
  };
  if(location.pathname==='/edit/server/php/'){
@@ -71,7 +84,7 @@
   const download=make('button','Descargar perfil','button');download.type='button';
   download.onclick=()=>{const data={name:'Virtual IA Panel',endpoint:location.origin+'/api/',user:context.user,authentication:'access-key',connected:false};const u=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=make('a');a.href=u;a.download='virtual-ia-connection.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);};api.append(download);
   card('Asistentes de IA','ChatGPT, Claude y otros asistentes necesitan un conector o adaptador autenticado. Esta instalación todavía no los conecta. Empieza con consultas de lectura; las modificaciones deben conservar permisos, registro y confirmación.',[['Claves por integración','/list/access-key/']]);
-  card('PHP y extensiones','La versión global se administra en Servidor. La versión de cada sitio se cambia en Dominios web de su cuenta. Las extensiones se instalan por versión de PHP mediante paquetes del sistema; no hay un instalador visual de extensiones en esta edición.',[['Versiones del servidor','/edit/server/#vip-php'],['Editor PHP global compartido','/edit/server/php/'],['Cuentas y dominios','/list/user/#cuentas']]);
+  card('PHP y extensiones','El gestor administrativo opcional permite planificar versiones y extensiones cuando está instalado. La versión de cada sitio se cambia en Dominios web de su cuenta; instalar otra rama no migra proyectos.',[['Versiones y actualizaciones','/list/server/#vip-software'],['PHP predeterminado','/edit/server/#vip-php'],['Editor PHP global compartido','/edit/server/php/'],['Cuentas y dominios','/list/user/#cuentas']]);
   card('Almacenamiento y respaldos','Elige destino y retención en los formularios nativos. La autorización inicial de Drive/OneDrive se realiza con Rclone. Comprueba una restauración antes de confiar datos reales. La programación global se administra por SSH; los trabajos de cada cuenta siguen disponibles en Trabajos programados.',[['Destino y compresión','/edit/server/#vip-backups'],['Retención incremental','/edit/server/#vip-retention'],['Copias locales por plan','/list/package/']]);
   const custom=card('Mis herramientas externas','Guarda accesos HTTPS a tus herramientas. Se conservan solo en este navegador y usuario; añadir un enlace no conecta su API.');
   const key='vip-tools:'+context.user;let saved=[];try{const v=JSON.parse(localStorage.getItem(key)||'[]');if(Array.isArray(v))saved=v.filter(x=>typeof x?.label==='string'&&typeof x?.url==='string').slice(0,20);}catch{}

@@ -20,5 +20,7 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run test:installer
+      - run: npm run test:software
+      - run: npm run test:software-endpoint
       - run: python -m py_compile scripts/*.py
       - run: python scripts/check-public.py

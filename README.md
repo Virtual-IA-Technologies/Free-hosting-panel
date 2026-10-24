@@ -4,15 +4,19 @@ Panel de administración con identidad Virtual IA, construido como una extensió
 
 Login grafito con usuario y contraseña juntos, recuperación nativa y [servicios por puertos independientes](docs/service-access.md). Los servicios adicionales son opcionales y se provisionan expresamente; instalar el tema no abre puertos ni crea cuentas.
 
+La versión 1.3.0 incorpora [pestañas de configuración](docs/configuration-tabs.md) y un [gestor administrativo opcional](docs/software-manager.md) para versiones, PHP y extensiones. El gestor tiene instalación separada y conserva autenticación, roles y CSRF nativos. Su estado de validación y publicación figura en [continuidad](docs/PENDIENTES_Y_CONTINUIDAD.md).
+
 ## Instalación
 
-Versión 1.2.2. Los artefactos optimizados están en `dist`; el servidor no necesita Node. Para modificar recursos: `npm ci`, `npm run build`, `npm run check` y `npm run test:installer` en el equipo de desarrollo.
+Versión 1.3.0. Los artefactos optimizados están en `dist`; el servidor no necesita Node. Para modificar recursos: `npm ci`, `npm run build`, `npm run check` y `npm run test:installer` en el equipo de desarrollo.
 
-Requiere HestiaCP 1.10.5, Python 3.10 o posterior, el cargador `web/js/custom_scripts` y FileGator instalado en `web/fm/dist`. El instalador comprueba la estructura compatible de FileGator antes de modificar archivos. Copiar este proyecto al servidor y ejecutar como root:
+Requiere HestiaCP 1.10.5, Python 3.10 o posterior, el cargador `web/js/custom_scripts` y FileGator instalado en `web/fm/dist`. El instalador comprueba la estructura compatible de FileGator antes de modificar archivos. Clona la versión publicada en el servidor y ejecuta como root:
 
 ```sh
-python3 scripts/install.py --dry-run
-python3 scripts/install.py --apply-to-existing-users
+git clone --branch v1.3.0 --depth 1 https://github.com/Virtual-IA-Technologies/Free-hosting-panel.git
+cd Free-hosting-panel
+python3 scripts/install.py --dry-run --default-theme medium
+python3 scripts/install.py --default-theme medium
 ```
 
 El instalador crea un respaldo privado con manifiesto y actualiza la marca, el tema predeterminado y los recursos propios. Las actualizaciones de archivos son atómicas. La opción de usuarios existentes es explícita; sin ella conserva sus preferencias de tema.
@@ -36,6 +40,8 @@ Para revertir una instalación concreta:
 python3 scripts/uninstall.py /opt/virtual-ia-panel/backups/FECHA
 ```
 
+Consulta la [instalación paso a paso](docs/installation.md) para actualizaciones, reversión, gestor opcional y estilo webmail. No se instala Node.js ni una terminal en el servidor.
+
 ## Uso
 
 Crear y editar abre un lateral con los formularios, tokens y validaciones nativas. Cerrar con cambios pide confirmación; el formulario completo sigue disponible ante errores de carga. El puente de comportamiento nativo se genera al instalar y se descarga solo al abrir el primer formulario. Tras actualizar Hestia, vuelve a ejecutar el instalador y las pruebas para regenerar los recursos compatibles. El hook conserva una copia de los recursos de la última instalación; no garantiza compatibilidad con una nueva versión de Hestia.
@@ -44,7 +50,9 @@ En las listas compatibles, doble clic abre la edición disponible o el detalle; 
 
 Durante la recarga aparece un indicador CSS de «Cargando…», sin descargar un GIF. Si el recurso VIP falla, el panel nativo vuelve a estar disponible tras ocho segundos. El modo sin JavaScript conserva la interfaz nativa.
 
-- Inicio: `/list/user/#inicio`; cuentas: `/list/user/#cuentas`.
+- Inicio: `/list/user/#inicio`; cuentas: `/list/user/#cuentas`. Estado de los servicios aparece debajo de Inicio en Panel; Reiniciar conserva la acción, token y confirmación de Hestia para cada servicio instalado.
+- Configuración usa pestañas debajo de la barra de acciones, ancho completo y un solo título. Correo incluye una guía de DKIM, SPF, DMARC y PTR; este último se configura en el proveedor de la IP. Consulta la guía contextual «Entrega de correo» en la lista y edición de dominios de correo.
+- Roundcube tiene un [estilo opcional](docs/installation.md#estilo-opcional-de-webmail) y soporte para sus recursos `static.php`; no cambia la autenticación ni crea buzones.
 - Cuentas: crear, administrar recursos, suspender o eliminar mediante los controles nativos. Los accesos de correo, web y bases de datos entran en el contexto de la cuenta elegida mediante la suplantación nativa protegida por token.
 - El espacio se administra mediante planes y la asignación del plan a cada cuenta. La cuota no aumenta físicamente el disco del VPS.
 - Cortafuegos: reglas, direcciones y bloqueos en las pantallas de Hestia; el tema no modifica reglas de red.

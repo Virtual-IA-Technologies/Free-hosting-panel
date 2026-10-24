@@ -1,5 +1,16 @@
 # Cambios
 
+## 1.3.0 — 2026-10-24
+
+- Pestañas accesibles en nueve formularios de configuración, incluidos Servidor, planes, marca blanca y opciones avanzadas de cuentas, dominios, DNS, SQL y correo. Se conservan campos, tokens, orden de envío y controles condicionales nativos.
+- Gestor administrativo opcional separado: versiones/candidatas reales, soporte PHP, planes confirmados, endpoint con sesión/rol/CSRF nativos y broker por socket Unix. Instalador independiente, auditoría, respaldos y recuperación de módulos FPM.
+- Carga diferida del gestor, estado de instalación real, selección PHP preservada y ausencia de sondeos al salir. Pruebas locales de pestañas, broker, endpoint e interfaz; validación de despliegue registrada en continuidad.
+
+- Configuración a ancho completo, título único y pestañas debajo de las acciones nativas.
+- Estado de los servicios debajo de Inicio en Panel y botón Reiniciar visible para cada servicio nativo instalado, conservando permisos y confirmación. Sin terminal ni dependencia Node en producción.
+- Roundcube moderno: recursos CSS/JS/logo servidos por `static.php` y plugin visual VIP opcional, reversible y sin cambios de buzones.
+- Guía contextual de DKIM, SPF, DMARC, PTR y relay; instrucciones de clonación, instalación, actualización y reversión para otros servidores.
+
 ## 1.2.2
 
 - La opción actual del menú mantiene el mismo fondo uniforme del hover, sin franja celeste y con texto legible.
