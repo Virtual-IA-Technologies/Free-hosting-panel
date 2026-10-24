@@ -36,12 +36,12 @@ def atomic_copy(data, destination):
     os.replace(temporary, destination)
 
 
-def prepare_assets(root, app_name, default_theme, integrated_files):
+def prepare_assets(root, app_name, default_theme, integrated_files, login_theme='graphite', phpmyadmin_port=0, account_port=0, webmail_port=0):
     assets={target:(SOURCE/relative).read_bytes() for relative,target in MAPPING.items()}
     assets.update(native_form_assets(root))
     if integrated_files:
         assets.update(build_assets(root))
-    settings={'appName':app_name,'defaultTheme':default_theme,'integratedFiles':integrated_files}
+    settings={'appName':app_name,'defaultTheme':default_theme,'integratedFiles':integrated_files,'loginTheme':login_theme,'phpmyadminPort':phpmyadmin_port,'accountPort':account_port,'webmailPort':webmail_port}
     fingerprint=hashlib.sha256(json.dumps(settings,sort_keys=True).encode())
     for target,data in sorted(assets.items()):
         fingerprint.update(target.encode()+b'\0'+hashlib.sha256(data).digest())
@@ -58,7 +58,15 @@ def main():
     parser.add_argument('--app-name', default='VIP - Virtual IA Panel', help='Nombre mostrado en el título del panel')
     parser.add_argument('--default-theme', choices=['night','graphite','medium','light'], default='night')
     parser.add_argument('--without-file-manager', action='store_true', help='Conservar el acceso al gestor nativo sin integración')
+    parser.add_argument('--login-theme', choices=['night','graphite','medium','light'], default='graphite')
+    parser.add_argument('--login-style', choices=['single','steps','preserve'], default='single')
+    parser.add_argument('--phpmyadmin-port', type=int, default=0, help='Enlazar un servicio existente por puerto; 0 conserva el enlace nativo')
+    parser.add_argument('--account-port', type=int, default=0, help='Enlazar un puerto nativo adicional de cuentas; no lo abre')
+    parser.add_argument('--webmail-port', type=int, default=0, help='Enlazar un servicio webmail existente; no lo abre')
     args = parser.parse_args()
+    ports=[args.phpmyadmin_port,args.account_port,args.webmail_port]
+    if any(not 0 <= port <= 65535 for port in ports) or len([p for p in ports if p])!=len(set(p for p in ports if p)):
+        parser.error('Puertos no válidos o duplicados.')
     if not re.fullmatch(r'[\w .()&+\-]{1,80}',args.app_name) or not args.app_name.strip():
         parser.error('El nombre admite letras, números, espacios y . () & + -, hasta 80 caracteres.')
     root = Path(args.hestia_root).resolve()
@@ -70,7 +78,7 @@ def main():
         if not (SOURCE/relative).is_file():
             parser.error('Falta recurso: '+relative)
     try:
-        assets,settings=prepare_assets(root,args.app_name.strip(),args.default_theme,not args.without_file_manager)
+        assets,settings=prepare_assets(root,args.app_name.strip(),args.default_theme,not args.without_file_manager,args.login_theme,args.phpmyadmin_port,args.account_port,args.webmail_port)
     except (OSError,ValueError) as error:
         parser.error(str(error))
     if args.dry_run:
@@ -86,7 +94,7 @@ def main():
     restore=state/'restore-assets.sh'
     paths = [root/value for value in assets] + [root/'web/images/logo.svg',root/'web/images/logo-header.svg',hook,restore]
     config = (root/'conf/hestia.conf').read_text()
-    previous = {key: match.group(1) for key in ['APP_NAME','TITLE','THEME'] if (match:=re.search(r"^"+key+r"='(.*)'$",config,re.M))}
+    previous = {key: match.group(1) for key in ['APP_NAME','TITLE','THEME','LOGIN_STYLE'] if (match:=re.search(r"^"+key+r"='(.*)'$",config,re.M))}
     manifest = {'root':str(root),'files':[],'previousConfig':previous,'previousThemes':{}}
     if args.apply_to_existing_users:
         for user in (root/'data/users').iterdir():
@@ -109,6 +117,8 @@ def main():
     cli('v-update-white-label-logo','no')
     for key,value in [('APP_NAME',settings['appName']),('TITLE','{{page}} - '+settings['appName']),('THEME','virtualia')]:
         cli('v-change-sys-config-value',key,value)
+    if args.login_style != 'preserve':
+        cli('v-change-sys-config-value','LOGIN_STYLE','old' if args.login_style=='single' else 'default')
     for user in manifest['previousThemes']:
         cli('v-change-user-theme',user,'virtualia')
     # A private asset snapshot permits restoring after an upstream package update.

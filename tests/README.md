@@ -1,5 +1,9 @@
 # Validación de interfaz
 
+Ejecuta las pruebas de navegador del mismo administrador de forma secuencial: el servidor puede interferir entre sesiones concurrentes. `login.cjs` admite los formularios nativos de uno y dos pasos sin evitar 2FA.
+
+`npm run test:access` verifica el login grafito de un paso, recuperación, móvil, enlaces y servicios por puerto configurados. No envía solicitudes de recuperación, no manda correos ni crea recursos. La entrega de correo y el acceso con buzones/usuarios SQL reales se validan después de crearlos.
+
 `npm run test:refresh` usa un contexto temporal de administrador: recarga tres veces Inicio y una Archivos, comprueba persistencia, ausencia de duplicados y de errores HTTP/JavaScript, y registra tiempos y transferencia de recursos propios. Simula la opción del gestor nativo solo en esa página de prueba, sin cambiar la configuración del servidor.
 
 `ui.cjs` realiza una prueba de integración sobre un servidor de revisión. Necesita Node, `playwright-core` y Chrome; admite `VIP_BROWSER_EXECUTABLE` para otra instalación Chromium. Definir mediante un mecanismo seguro `VIP_BASE_URL` (sin barra final), `VIP_USERNAME` y `VIP_PASSWORD`; ejecutar `node tests/ui.cjs`.

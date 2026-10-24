@@ -1,6 +1,10 @@
-# Validación de la versión 1.1.1
+# Validación de la versión 1.2.0
 
 Revisión del 24 de octubre de 2026 sobre HestiaCP 1.10.5.
+
+En 1.2.0 se comprobó el login de un paso, grafito incluso con una preferencia clara antigua, formulario móvil y recuperación nativa. No se enviaron mensajes ni se certificó entrega SMTP. phpMyAdmin responde por su puerto dedicado, muestra el formulario SQL sin errores de controluser y bloquea sus rutas internas. El certificado del servidor de revisión valida externamente el hostname y la IP principal en los puertos del panel y de phpMyAdmin. La renovación de corta duración se simuló correctamente con la CA de pruebas y se verificó el temporizador activo. Los servicios opcionales de cuentas/webmail requieren habilitación explícita y validación en cada despliegue; instalar el tema no abre sus puertos.
+
+También se verificó que la URL antigua de phpMyAdmin redirige al puerto HTTPS sin bucles, tanto por hostname como por IP. Los scripts de cuentas y webmail pasaron su comprobación de prerrequisitos sin abrir sus puertos. Los accesos y el firewall del servidor de revisión no forman parte del código público.
 
 En 1.1.1 se corrigió el zoom heredado de los formularios de archivos. La prueba verifica los límites al abrir, sin esperar a que una animación oculte el desbordamiento, y conserva la comprobación móvil.
 

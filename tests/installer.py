@@ -41,6 +41,9 @@ class InstallerTest(unittest.TestCase):
             configured,settings=prepare_assets(root,'Example Panel','medium',True)
             self.assertEqual(json.loads(configured['web/js/virtualia/config.json']),settings)
             self.assertEqual(settings['defaultTheme'],'medium')
+            self.assertEqual(settings['loginTheme'],'graphite')
+            ports,choices=prepare_assets(root,'Example Panel','light',True,'graphite',2083,2087,2096)
+            self.assertEqual((choices['phpmyadminPort'],choices['accountPort'],choices['webmailPort']),(2083,2087,2096))
             self.assertEqual(settings['assetVersion'],prepare_assets(root,'Example Panel','medium',True)[1]['assetVersion'])
             self.assertNotEqual(settings['assetVersion'],prepare_assets(root,'Example Panel','light',True)[1]['assetVersion'])
             (js/'app.js').write_text('unsupported upstream build')
@@ -58,6 +61,8 @@ class InstallerTest(unittest.TestCase):
             result=subprocess.run([sys.executable,str(ROOT/'scripts/install.py'),'--hestia-root',str(root),'--dry-run','--without-file-manager','--default-theme','medium','--app-name','Example Panel'],capture_output=True)
             self.assertEqual(result.returncode,0,result.stderr)
             rejected=subprocess.run([sys.executable,str(ROOT/'scripts/install.py'),'--app-name',"invalid'name"],capture_output=True)
+            self.assertNotEqual(rejected.returncode,0)
+            rejected=subprocess.run([sys.executable,str(ROOT/'scripts/install.py'),'--phpmyadmin-port','2083','--webmail-port','2083'],capture_output=True)
             self.assertNotEqual(rejected.returncode,0)
 
 

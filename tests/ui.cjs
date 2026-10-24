@@ -13,8 +13,7 @@ const {chromium}=require('playwright-core');
   const a=lum(rgb(getComputedStyle(e).color)),b=lum(rgb(bg));return(Math.max(a,b)+.05)/(Math.min(a,b)+.05);
  });
  try{
-  await page.goto(base+'/login/',{waitUntil:'networkidle'});await page.locator('#username').fill(user);await page.locator('#login-form button[type=submit]').click();
-  await page.locator('input[type=password]').fill(password);await page.locator('#login-form button[type=submit]').click();await page.waitForURL('**/list/user/**');await page.waitForLoadState('networkidle');
+  await require('./login.cjs')(page,base,user,password);await page.waitForURL('**/list/user/**');await page.waitForLoadState('networkidle');
   assert(await page.locator('#via-home').isVisible(),'Inicio no visible');
   assert(await page.locator('.via-favorites a').evaluateAll(links=>new Set(links.map(a=>a.href)).size===links.length),'Accesos frecuentes duplicados');
   assert(await page.locator('script[src*="filegator"],script[src*="files.min.js"]').count()===0,'Gestor cargado antes de solicitarlo');

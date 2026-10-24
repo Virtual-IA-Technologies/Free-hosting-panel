@@ -18,7 +18,7 @@ En el servidor, con una cuenta que pueda usar `sudo`:
 ```sh
 git clone https://github.com/Virtual-IA-Technologies/Free-hosting-panel.git
 cd Free-hosting-panel
-git checkout v1.1.1
+git checkout v1.2.0
 sudo python3 scripts/install.py --dry-run --default-theme medium
 sudo python3 scripts/install.py --default-theme medium
 ```
@@ -31,12 +31,15 @@ Opciones independientes:
 | --- | --- |
 | `--app-name "Mi Panel"` | Nombre visible del panel |
 | `--default-theme medium` | Tema inicial: `night`, `graphite`, `medium` o `light` |
+| `--login-theme graphite` | Tema del login, independiente del panel |
+| `--login-style single` | Usuario y contraseña juntos; admite `steps` o `preserve` |
+| `--phpmyadmin-port`, `--account-port`, `--webmail-port` | Enlazar servicios ya instalados; no abrir puertos |
 | `--without-file-manager` | Mantener el gestor nativo; no generar su integración |
 | `--hestia-root /ruta/hestia` | Instalar en otra ruta de Hestia |
 | `--apply-to-existing-users` | Asignar expresamente el tema VIP a usuarios existentes |
 | `--dry-run` | Verificar compatibilidad sin cambiar archivos |
 
-La instalación conserva usuarios, contraseñas, hostname, IP, dominios, DNS y certificados. Las preferencias previas de apariencia se conservan en cada navegador. El instalador no limpia datos ni provisiona cuentas.
+La instalación conserva usuarios, contraseñas, hostname, IP, dominios, DNS y certificados. Las preferencias de apariencia del panel se conservan por usuario. El login usa su propio tema y el estilo nativo indicado. El instalador no limpia datos ni provisiona cuentas. Para activar servicios y firewall por separado, consulta [accesos por puerto](service-access.md).
 
 ## 3. Validar y empezar
 

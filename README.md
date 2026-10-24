@@ -2,9 +2,11 @@
 
 Panel de administración con identidad Virtual IA, construido como una extensión ligera de HestiaCP 1.10.5. Incluye navegación lateral, búsqueda, inicio con recursos reales, temas y accesos de administración por cuenta. La interfaz usa HTML, CSS y JavaScript progresivo: no requiere un servidor Node ni sustituye la autenticación nativa.
 
+Login grafito con usuario y contraseña juntos, recuperación nativa y [servicios por puertos independientes](docs/service-access.md). Los servicios adicionales son opcionales y se provisionan expresamente; instalar el tema no abre puertos ni crea cuentas.
+
 ## Instalación
 
-Versión 1.1.1. Los artefactos optimizados están en `dist`; el servidor no necesita Node. Para modificar recursos: `npm ci`, `npm run build`, `npm run check` y `npm run test:installer` en el equipo de desarrollo.
+Versión 1.2.0. Los artefactos optimizados están en `dist`; el servidor no necesita Node. Para modificar recursos: `npm ci`, `npm run build`, `npm run check` y `npm run test:installer` en el equipo de desarrollo.
 
 Requiere HestiaCP 1.10.5, Python 3.10 o posterior, el cargador `web/js/custom_scripts` y FileGator instalado en `web/fm/dist`. El instalador comprueba la estructura compatible de FileGator antes de modificar archivos. Copiar este proyecto al servidor y ejecutar como root:
 
@@ -24,7 +26,7 @@ python3 scripts/install.py --app-name "VIP - Mi Panel" --default-theme medium
 python3 scripts/install.py --without-file-manager --default-theme medium
 ```
 
-`--default-theme` admite `night`, `graphite`, `medium` y `light`. Define la apariencia inicial del login y usuarios sin preferencias guardadas; cada usuario conserva su elección. `--app-name` configura el título y nombre del panel, manteniendo la identidad gráfica Virtual IA. `--hestia-root` permite otra ruta de Hestia. `--without-file-manager` conserva el acceso nativo y omite las copias adaptadas de FileGator. La configuración pública generada contiene únicamente nombre, tema, modo de archivos y versión de recursos; no debe contener secretos. Para cambiarla, vuelve a ejecutar el instalador con las opciones deseadas.
+`--default-theme` admite `night`, `graphite`, `medium` y `light` para usuarios sin preferencias guardadas; cada usuario conserva su elección dentro del panel. El login usa por separado `--login-theme graphite`, sin reutilizar antiguas preferencias claras del navegador. `--login-style single|steps|preserve` controla el formulario nativo. `--app-name` configura el título y nombre del panel; `--hestia-root` admite otra ruta de Hestia. `--without-file-manager` omite las copias adaptadas de FileGator. `--phpmyadmin-port`, `--account-port` y `--webmail-port` enlazan servicios existentes; no los abren. La configuración pública contiene solamente nombre, temas, puertos, modo de archivos y versión de recursos. No debe contener secretos. Para cambiarla, vuelve a ejecutar el instalador con las opciones elegidas.
 
 Cada instalación calcula una huella del contenido y opciones para versionar CSS y JavaScript: las recargas pueden reutilizar los recursos en caché, mientras que una actualización obtiene URLs nuevas automáticamente. Las páginas autenticadas conservan la política nativa de Hestia.
 

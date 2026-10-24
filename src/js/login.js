@@ -13,4 +13,6 @@
   add('p', 'via-login-description', 'Gestiona cuentas, sitios y servicios desde un entorno claro, seguro y conectado.');
   add('p', 'via-login-topics', 'Hosting  ·  Servicios  ·  Seguridad');
   app.prepend(section);
+  const submit=app.querySelector('#login-form button[type="submit"]');
+  if(submit&&app.querySelector('#password')){const icon=submit.querySelector('i');submit.replaceChildren();if(icon)submit.append(icon);submit.append(document.createTextNode('Iniciar sesión'));}
 })();

@@ -1,5 +1,13 @@
 # Cambios
 
+## 1.2.0
+
+- Login grafito independiente del tema del panel, usuario y contraseña juntos mediante el formulario nativo y recuperación según la política de Hestia. Autenticación y 2FA conservadas.
+- Puertos de phpMyAdmin, acceso de cuentas y webmail configurables en los enlaces, sin guardar hostname/IP en el código.
+- Provisionamiento explícito y separado de servicios: phpMyAdmin nativo, listener adicional de Hestia sin proxy y Roundcube por HTTPS. Firewall público solo con opción expresa; IPv6 opcional.
+- Hook CLI para importar certificados renovados mediante Hestia, con respaldo y verificación de clave/vigencia. Guía para certificados de IP y renovación automatizada.
+- Pruebas de login, recuperación sin envío de correos, servicios, TLS externo y puertos; pruebas previas compatibles con login de uno o dos pasos.
+
 ## 1.1.1
 
 - Formularios laterales de archivos sin el zoom heredado de FileGator, evitando desbordamientos durante la apertura.

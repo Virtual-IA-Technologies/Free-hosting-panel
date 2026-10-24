@@ -1,6 +1,6 @@
 # Seguridad
 
-La versión mantenida de esta extensión es 1.1.x, probada con HestiaCP 1.10.5. Mantén también actualizado el sistema operativo y sus servicios; VIP no sustituye su mantenimiento.
+La versión mantenida de esta extensión es 1.2.x, probada con HestiaCP 1.10.5. Mantén también actualizado el sistema operativo y sus servicios; VIP no sustituye su mantenimiento.
 
 - No publiques contraseñas, claves SSH/API, tokens de sesión, archivos `.env`, respaldos ni datos de clientes.
 - Usa credenciales y llaves diferentes por servidor. Conserva las claves privadas en un gestor seguro; solo las claves públicas deben registrarse en el servicio correspondiente.
