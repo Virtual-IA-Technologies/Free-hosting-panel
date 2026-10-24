@@ -41,7 +41,9 @@ if args.service=='accounts':
     def reload_service():
         os.kill(int(Path('/run/hestia-nginx.pid').read_text().strip()),signal.SIGHUP)
 else:
-    for required in [Path('/var/lib/roundcube/index.php'),Path('/run/php/www.sock'),root/'ssl/certificate.crt',root/'ssl/certificate.key']:
+    roundcube=Path('/var/lib/roundcube')
+    document_root=roundcube/'public_html' if (roundcube/'public_html/index.php').is_file() else roundcube
+    for required in [document_root/'index.php',Path('/run/php/www.sock'),root/'ssl/certificate.crt',root/'ssl/certificate.key']:
         if not required.exists():p.error('Missing native webmail prerequisite: '+str(required))
     target=Path('/etc/nginx/conf.d/vip-webmail.conf')
     if target.exists() and not target.read_text().startswith('# VIP native webmail service'):
@@ -54,13 +56,13 @@ server {{
     ssl_certificate {root}/ssl/certificate.crt;
     ssl_certificate_key {root}/ssl/certificate.key;
     ssl_protocols TLSv1.2 TLSv1.3;
-    root /var/lib/roundcube;
+    root {document_root};
     index index.php;
     client_max_body_size 50m;
     error_page 497 https://$host:$server_port$request_uri;
     location = /index.php {{
         include /etc/nginx/fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME /var/lib/roundcube/index.php;
+        fastcgi_param SCRIPT_FILENAME {document_root}/index.php;
         fastcgi_pass unix:/run/php/www.sock;
     }}
     location ~ ^/(config|temp|logs|bin|SQL|installer|vendor|tests)(/|$) {{ return 404; }}

@@ -91,7 +91,7 @@
   let dashboard;
   const files=node('section','vip-files');files.id='vip-files';files.setAttribute('aria-label','Gestor de archivos');content.append(files);
   let fileStarted=false;
-  const footer=document.querySelector('.app-footer');if(footer){footer.append(node('span','vip-product-brand',' · '+(context.appName||'VIP - Virtual IA Panel')+' v1.2.0'));}
+  const footer=document.querySelector('.app-footer');if(footer){footer.append(node('span','vip-product-brand',' · '+(context.appName||'VIP - Virtual IA Panel')+' v1.2.1'));}
   if (context.admin && /^\/list\/user\/?$/.test(location.pathname)) {
     const hint=node('aside','vip-account-hint','Administra cada cuenta desde sus accesos directos. Para aumentar o reducir espacio, ajusta su plan en Recursos. ');
     const plans=node('a','','Administrar planes');plans.href='/list/package/';hint.append(plans);heading.after(hint);

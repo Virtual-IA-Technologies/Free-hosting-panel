@@ -13,7 +13,7 @@
 .via-shell :is(.via-tool-card p,.via-server-info small,.via-page-heading p,.via-sidebar-footer){color:var(--vip-muted)}
 .via-shell .via-tool-section,.via-shell .via-server-info,.via-shell .via-metric,.via-shell .via-tool-card{background:var(--vip-surface);border-color:var(--vip-border)}
 .via-shell .via-tool-section h3{background:var(--vip-raised);border-color:var(--vip-border)}
-.via-shell .via-link.via-active{background:var(--vip-selected);color:var(--vip-link)}
+.via-shell .via-link.via-active{color:var(--vip-heading);box-shadow:none}
 .via-shell .via-search{background:var(--vip-input);color:var(--vip-text);border-color:var(--vip-border)}
 :root:is([data-via-theme="light"],[data-via-theme="medium"]) .via-shell{color-scheme:light}
 :root:is([data-via-theme="light"],[data-via-theme="medium"]) .via-shell :is(.top-bar,.toolbar){background:var(--vip-surface);border-color:var(--vip-border)}

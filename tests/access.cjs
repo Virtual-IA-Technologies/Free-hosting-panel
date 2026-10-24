@@ -15,7 +15,7 @@ const {chromium}=require('playwright-core');
   assert(await page.locator('#login-form a[href="/reset/"]').isVisible(),'Password recovery is absent');
   await page.setViewportSize({width:390,height:844});
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Mobile login overflows');
-  await page.locator('a[href="/reset/"]').click();await page.locator('input[name="email"]').waitFor();
+  await page.locator('a[href="/reset/"]').click();await page.locator('input[name="email"]').waitFor();await page.waitForLoadState('networkidle');
   assert(await page.locator('html').getAttribute('data-via-theme')==='graphite','Reset uses another theme');
   await require('./login.cjs')(page,base,user,password);await page.waitForURL('**/list/user/**');
   await page.goto(base+'/list/db/',{waitUntil:'networkidle'});

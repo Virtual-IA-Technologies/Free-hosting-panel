@@ -1,5 +1,12 @@
 # Cambios
 
+## 1.2.1
+
+- Menú sin fondo azul ni franja celeste de selección; hover de un solo color y página actual indicada discretamente, conservando foco de teclado.
+- Webmail detecta el directorio `public_html` de las versiones recientes de Roundcube, con compatibilidad con la estructura anterior.
+- Prueba de recuperación espera la carga del tema antes de comprobarlo.
+- Validación externa de los cuatro puertos, formularios de cuentas y webmail y bloqueo de configuración privada, sin crear recursos de clientes.
+
 ## 1.2.0
 
 - Login grafito independiente del tema del panel, usuario y contraseña juntos mediante el formulario nativo y recuperación según la política de Hestia. Autenticación y 2FA conservadas.

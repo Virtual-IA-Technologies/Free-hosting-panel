@@ -6,6 +6,8 @@ En 1.2.0 se comprobó el login de un paso, grafito incluso con una preferencia c
 
 También se verificó que la URL antigua de phpMyAdmin redirige al puerto HTTPS sin bucles, tanto por hostname como por IP. Los scripts de cuentas y webmail pasaron su comprobación de prerrequisitos sin abrir sus puertos. Los accesos y el firewall del servidor de revisión no forman parte del código público.
 
+En 1.2.1, tras autorización expresa de apertura, se habilitaron los accesos adicionales de cuentas y webmail en el servidor de revisión. Se comprobó HTTPS válido por hostname e IP, formularios nativos y acceso bloqueado a la configuración privada de Roundcube. La prueba de navegador comprobó los cuatro accesos configurados. No se enviaron correos ni se crearon buzones o cuentas de clientes; la autenticación con usuarios reales de SQL/correo se verifica al provisionarlos.
+
 En 1.1.1 se corrigió el zoom heredado de los formularios de archivos. La prueba verifica los límites al abrir, sin esperar a que una animación oculte el desbordamiento, y conserva la comprobación móvil.
 
 Añadido en 1.1.1: laterales de alta/edición, restauración del formulario de fondo, generador nativo de contraseña, confirmación al descartar cambios y ancho móvil de 390 px. Doble clic, clic derecho y preferencias por lista comprobados. Los POST de validación y éxito se interceptan y simulan: no se escriben recursos reales.

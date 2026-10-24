@@ -15,7 +15,7 @@ Son ejemplos configurables, no una asignación obligatoria ni los puertos están
 
 ## Preparar y habilitar
 
-Requiere Nginx, el certificado del panel, los scripts CLI de Hestia y los componentes nativos correspondientes. Para phpMyAdmin se reutiliza `phpmyadmin.inc`; para webmail se requiere Roundcube en `/var/lib/roundcube`. Se utiliza el socket PHP instalado `/run/php/www.sock`.
+Requiere Nginx, el certificado del panel, los scripts CLI de Hestia y los componentes nativos correspondientes. Para phpMyAdmin se reutiliza `phpmyadmin.inc`; para webmail se requiere Roundcube en `/var/lib/roundcube`. El script detecta `public_html/index.php` en versiones recientes y mantiene compatibilidad con la estructura anterior. Se utiliza el socket PHP instalado `/run/php/www.sock`.
 
 ```sh
 sudo python3 scripts/phpmyadmin-service.py --port 2083 --dry-run
