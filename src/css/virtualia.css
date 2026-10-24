@@ -1,5 +1,20 @@
 /* Virtual IA Technologies — extension del tema oscuro nativo de Hestia. */
 @import url('/css/themes/dark.min.css?v=1.10.5');
+/* Hide the native layout until the VIP shell is ready, before deferred JS runs. */
+@media(scripting:enabled){body:has(.app-content):not(.via-shell):not(.vip-native-fallback) .app{visibility:hidden;}}
+html.js body:has(.app-content):not(.via-shell):not(.vip-native-fallback) .app {visibility:hidden;}
+html.js body:has(.app-content):not(.via-shell):not(.vip-native-fallback)::before {
+  content:'Cargando…';position:fixed;inset:0;display:grid;place-content:center;
+  padding-top:66px;background:#0b1322;color:#cad7e8;font:400 13px 'Segoe UI',sans-serif;
+  letter-spacing:.04em;z-index:2147483645;
+}
+html.js body:has(.app-content):not(.via-shell):not(.vip-native-fallback)::after {
+  content:'';position:fixed;left:calc(50% - 14px);top:calc(50% - 24px);
+  width:28px;height:28px;border:2px solid #263b56;border-top-color:#38bdf8;
+  border-radius:50%;z-index:2147483646;animation:vip-boot-spin .75s linear infinite;
+}
+@keyframes vip-boot-spin {to{transform:rotate(360deg);}}
+@media(prefers-reduced-motion:reduce){html.js body::after{animation:none!important;}}
 :root {
   --color-text:#cad7e8; --color-text-heading:#f2f7ff;
   --color-text-link:#48c6ff; --color-text-link-hover:#9ce8ff;

@@ -9,5 +9,16 @@ deployments/
 *.pem
 *.key
 *.log
+*.p12
+*.pfx
+*.kdbx
+*.tar
+*.tar.gz
+*.zip
+.ssh/
+.secrets/
+secrets/
+id_rsa*
+id_ed25519*
 __pycache__/
 .DS_Store

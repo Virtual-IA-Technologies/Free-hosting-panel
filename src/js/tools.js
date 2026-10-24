@@ -4,9 +4,40 @@
  const raw=document.getElementById('via-context');
  if(!raw)return;
  const context=JSON.parse(raw.textContent);
- if(!context.admin)return;
  const make=(tag,text,cls)=>{const e=document.createElement(tag);if(text)e.textContent=text;if(cls)e.className=cls;return e;};
  const link=(label,href)=>{const a=make('a',label,'via-link');a.href=href;return a;};
+ const hints={
+  '/list/web/':'Puedes preparar el sitio antes de mover el DNS. Con IP compartida, abrir solo la IP muestra el sitio predeterminado. En Probar antes del DNS encontrarás cómo dirigir únicamente tu PC al servidor nuevo.',
+  '/list/dns/':'Editor de zonas DNS: abre una zona para añadir o editar registros A, AAAA, CNAME, MX, TXT y otros. Estos cambios se publican si el dominio usa los nameservers de este servidor; con DNS externo, edita los registros en ese proveedor.',
+  '/list/db/':'phpMyAdmin: usa el icono de acceso único de cada base de datos para entrar sin otro login cuando el SSO está habilitado. Si aún no tienes bases, crea una con su usuario y contraseña SQL. La URL directa de phpMyAdmin pide credenciales SQL; la contraseña del panel o SSH no es una cuenta de MySQL.',
+  '/add/user/':'Cuenta de alojamiento: el plan define límites de web, DNS, correo, bases de datos, disco y respaldos. Hestia crea /home/usuario/ y aplica sus permisos. Después entra en la cuenta para añadir dominios, buzones y bases; no se crean automáticamente al guardar este formulario.',
+  '/list/mail/':'Correo de esta cuenta: añade un dominio de correo y después sus buzones. Los mensajes se guardan bajo /home/usuario/mail/ y cada buzón tiene su propia contraseña. Los registros MX y la configuración DNS pública deben corresponder al proveedor que recibirá el correo.',
+  '/edit/dns/':'La IP de la zona DNS y la IP del sitio web se administran por separado. Revisa A, AAAA, www y MX según los servicios que quieras mover. Una zona local no cambia la delegación del registrador.',
+  '/list/ip/':'Direcciones del servidor: administra únicamente IP asignadas por tu proveedor y correctamente configuradas en la red. Cambiar un registro DNS no añade una IP al VPS ni cambia automáticamente la IP de un sitio.'
+ };
+ if(hints[location.pathname] && (context.admin || !['/list/ip/','/add/user/'].includes(location.pathname)))document.querySelector('.via-page-heading')?.after(make('aside',hints[location.pathname],'vip-account-hint'));
+ if(location.pathname==='/edit/web/'){
+  if(location.hash==='#vip-ssl')document.querySelector('#v_ssl')?.closest('.form-check')?.scrollIntoView({block:'center'});
+  const selector=document.querySelector('#v_backend_template');
+  if(selector){const note=make('aside','PHP de este dominio: esta selección es independiente de la versión predeterminada del servidor. Los límites personalizados requieren un pool o plantilla propios.','vip-account-hint');selector.closest('details')?.before(note);}
+ }
+ if(location.pathname==='/list/web/'){
+  const preview=make('details',null,'vip-hosting-guide vip-preview-guide');
+  preview.append(make('summary','Probar antes del DNS'));
+  preview.append(make('p','Consulta la IP asignada al sitio en su edición. En tu PC abre como administrador C:\\Windows\\System32\\drivers\\etc\\hosts (Windows) o /etc/hosts (Linux/macOS) y añade una línea con esa IP y el dominio:'));
+  preview.append(make('code','IP_DEL_SITIO dominio.example www.dominio.example'));
+  preview.append(make('p','Abre el dominio en el navegador. Solo tu PC usará el servidor nuevo; al terminar, elimina esa línea. Comprueba también www e IPv6. HTTPS requiere un certificado válido para ese dominio; cambiar hosts no lo genera. Algunas aplicaciones redirigen a su URL configurada.'));
+  preview.append(make('p','Para enlaces temporales compartibles, Hestia permite generar alias a partir del nombre DNS de una IP. Primero configura ese nombre y su DNS; no se activa al abrir esta ayuda.'));
+  document.querySelector('.via-page-heading')?.after(preview);
+  const hint=make('aside','Cada dominio tiene su propio certificado SSL. Abre SSL / HTTPS para habilitar Let’s Encrypt, instalar un certificado propio o forzar HTTPS. El DNS del dominio debe apuntar a este servidor para validar Let’s Encrypt.','vip-account-hint');
+  document.querySelector('.via-page-heading')?.after(hint);
+  document.querySelectorAll('.js-unit').forEach(row=>{
+   const edit=[...row.querySelectorAll('a[href]')].find(a=>new URL(a.href,location.origin).pathname==='/edit/web/');
+   const cell=row.querySelector('.units-table-heading-cell');
+   if(edit&&cell){const shortcuts=make('div',null,'vip-account-actions');const a=link('SSL / HTTPS',edit.getAttribute('href').split('#')[0]+'#vip-ssl');shortcuts.append(a);cell.append(shortcuts);}
+  });
+ }
+ if(!context.admin)return;
  const sections={
   '#vip-php':['#v_php_default_version','PHP del servidor: instala o retira versiones y elige la predeterminada. Para cambiar un sitio, entra en su cuenta → Dominios web → Editar → Opciones avanzadas → PHP / Backend. Cada dominio conserva su selección.'],
   '#vip-backups':['#v_backup','Respaldos completos: destino, compresión y ruta. La cantidad local se modifica en el plan de cada cuenta. Google Drive y OneDrive requieren primero autorizar un remoto de Rclone en el servidor.'],
@@ -29,20 +60,6 @@
  if(location.pathname==='/edit/server/php/'){
   const warning=make('aside','Editor PHP global compartido: Hestia aplica este archivo a las versiones de PHP del servidor. Para una configuración independiente usa el php.ini de la versión o el pool del dominio mediante administración SSH. Este editor no es específico de una cuenta.','vip-account-hint');
   document.querySelector('.via-page-heading')?.after(warning);
- }
- if(location.pathname==='/edit/web/'){
-  if(location.hash==='#vip-ssl')document.querySelector('#v_ssl')?.closest('.form-check')?.scrollIntoView({block:'center'});
-  const selector=document.querySelector('#v_backend_template');
-  if(selector){const note=make('aside','PHP de este dominio: esta selección es independiente de la versión predeterminada del servidor. Los límites personalizados requieren un pool o plantilla propios.','vip-account-hint');selector.closest('details')?.before(note);}
- }
- if(location.pathname==='/list/web/'){
-  const hint=make('aside','Cada dominio tiene su propio certificado SSL. Abre SSL / HTTPS para habilitar Let’s Encrypt, instalar un certificado propio o forzar HTTPS. El DNS del dominio debe apuntar a este servidor para validar Let’s Encrypt.','vip-account-hint');
-  document.querySelector('.via-page-heading')?.after(hint);
-  document.querySelectorAll('.js-unit').forEach(row=>{
-   const edit=[...row.querySelectorAll('a[href]')].find(a=>new URL(a.href,location.origin).pathname==='/edit/web/');
-   const cell=row.querySelector('.units-table-heading-cell');
-   if(edit&&cell){const shortcuts=make('div',null,'vip-account-actions');const a=link('SSL / HTTPS',edit.getAttribute('href').split('#')[0]+'#vip-ssl');shortcuts.append(a);cell.append(shortcuts);}
-  });
  }
  const content=document.querySelector('.app-content');
  if(location.pathname==='/list/user/' && content){

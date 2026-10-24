@@ -16,7 +16,18 @@ const {chromium}=require('playwright-core');
   await page.goto(base+'/login/',{waitUntil:'networkidle'});await page.locator('#username').fill(user);await page.locator('#login-form button[type=submit]').click();
   await page.locator('input[type=password]').fill(password);await page.locator('#login-form button[type=submit]').click();await page.waitForURL('**/list/user/**');await page.waitForLoadState('networkidle');
   assert(await page.locator('#via-home').isVisible(),'Inicio no visible');
+  assert(await page.locator('.via-favorites a').evaluateAll(links=>new Set(links.map(a=>a.href)).size===links.length),'Accesos frecuentes duplicados');
+  assert(await page.locator('script[src*="filegator"],script[src*="files.min.js"]').count()===0,'Gestor cargado antes de solicitarlo');
+  assert(await page.locator('.vip-hosting-guide').count()===1,'Falta guía de dominios y DNS');
   const categories=await page.locator('.via-group summary').allTextContents();assert(categories.indexOf('Alojamiento')<categories.indexOf('Configuración del servidor'),'Orden del menú incorrecto');
+  await page.locator('.vip-appearance select').selectOption('medium');
+  await page.waitForFunction(()=>getComputedStyle(document.querySelector('.via-tool-card')).backgroundColor==='rgb(248, 250, 252)');
+  assert(await contrast('.via-sidebar .via-link')>=4.5,'Menú Medium sin contraste');
+  assert(await contrast('.via-tool-card strong')>=4.5,'Contenido Medium sin contraste');
+  assert(await page.locator('.via-sidebar').evaluate(e=>getComputedStyle(e).backgroundColor)==='rgb(27, 30, 40)','Menú Medium no es grafito oscuro');
+  await page.reload({waitUntil:'networkidle'});
+  assert(await page.locator('.vip-appearance select').inputValue()==='medium','Medium no persiste');
+  if(process.env.VIP_SCREENSHOT)await page.screenshot({path:process.env.VIP_SCREENSHOT.replace('.png','-medium.png')});
   await page.locator('.vip-appearance select').selectOption('light');await page.locator('.via-tool-card').first().hover();
   assert(await contrast('.via-tool-card strong')>=4.5,'Hover claro sin contraste');
   assert(await page.locator('.via-brand img').evaluate(e=>getComputedStyle(e).backgroundColor)==='rgba(0, 0, 0, 0)','Logo con recuadro');
@@ -62,18 +73,28 @@ const {chromium}=require('playwright-core');
    await page.locator(`#via-sidebar a[href$="#vip-${hash}"]`).click();await page.waitForLoadState('networkidle');
    assert(await page.locator(selector).evaluate(e=>e.closest('details').open),'Sección cerrada: '+hash);
    assert(await page.locator('.vip-account-hint').count()>0,'Falta contexto: '+hash);
+   assert(await page.locator('#via-home').count()===0,'Inicio construido fuera de su pantalla');
+   assert(await page.locator('#via-context').evaluate(e=>!JSON.parse(e.textContent).server),'Métricas innecesarias en configuración');
   }
+  for(const [path,copy] of [['/list/dns/','Editor de zonas DNS'],['/list/ip/','Direcciones del servidor'],['/list/db/','phpMyAdmin:']]){
+   await page.locator(`#via-sidebar a[href="${path}"]`).first().click();await page.waitForLoadState('networkidle');
+   assert(await page.locator('.vip-account-hint').filter({hasText:copy}).isVisible(),'Falta orientación: '+path);
+   assert(await page.locator('.via-link.via-active').count()>0,'Ruta no accesible: '+path);
+  }
+  await page.locator('#via-sidebar a[href="/list/web/"]').first().click();await page.waitForLoadState('networkidle');
+  await page.getByText('Probar antes del DNS',{exact:true}).click();
+  assert(await page.locator('.vip-preview-guide code').isVisible(),'Ayuda de prueba antes del DNS ausente');
   await page.goto(base+'/list/user/#cuentas',{waitUntil:'networkidle'});
   await page.setViewportSize({width:390,height:844});assert(await page.evaluate(()=>document.querySelector('.top-bar-right').getBoundingClientRect().right<=innerWidth+1),'Barra móvil fuera de pantalla');await page.setViewportSize({width:1440,height:1000});
   const fileLink=page.locator('#via-sidebar a[href$="#archivos"]');if(await fileLink.count()){
-    await fileLink.click();const frame=page.frameLocator('.vip-file-frame');await frame.locator('table').first().waitFor({timeout:20000});
+    await fileLink.click();const frame=page.locator('#vip-files');await frame.locator('table').first().waitFor({timeout:20000});
     await frame.locator('#vip-file-tools').waitFor();
     assert(!await frame.locator('nav.navbar').isVisible(),'Cabecera de archivos duplicada');
     await frame.getByRole('button',{name:'Cuadrícula',exact:true}).click();
-    assert(await frame.locator('body').evaluate(e=>e.classList.contains('vip-files-grid')),'Cuadrícula no aplicada');
+    assert(await frame.evaluate(e=>e.classList.contains('vip-files-grid')),'Cuadrícula no aplicada');
     await frame.getByRole('button',{name:'Lista',exact:true}).click();
     assert(await frame.locator('#vip-file-folders').isVisible(),'Navegación de carpetas ausente');
-    const width=await frame.locator('#dropzone').evaluate(e=>e.getBoundingClientRect().width/innerWidth);assert(width>.95,'Archivos no aprovecha el ancho');
+    const width=await frame.locator('#dropzone').evaluate(e=>e.getBoundingClientRect().width/document.getElementById('vip-files').clientWidth);assert(width>.95,'Archivos no aprovecha el ancho');
     assert(new URL(page.url()).hash==='#archivos','El gestor sale del panel');assert(await page.locator('#via-sidebar').isVisible(),'Sin menú en archivos');
   }
   assert(errors.length===0,errors.join('; '));console.log(JSON.stringify({result:'PASS',contrast:'>=4.5',resources,appearance:'scale/backgrounds/persistence/reset OK',tables:'24px',files:'inside panel',developers:'external tools and native configuration shortcuts OK',javascriptErrors:errors},null,2));

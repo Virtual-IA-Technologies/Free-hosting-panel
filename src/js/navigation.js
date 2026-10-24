@@ -52,12 +52,12 @@
     const part = u.pathname.split('/').filter(Boolean)[1]?.toUpperCase();
     if (labels[part]) hostingGroup[1].push([labels[part][0], u.pathname + u.search, labels[part][1], a.querySelector('.main-menu-stats')?.textContent.replace(/\s+/g, ' ').trim() || 'Administrar este servicio']);
   });
-  for(const [path,label] of [['/list/web/','Dominios'],['/list/db/','Bases de datos']]){
+  if(context.admin)for(const [path,label] of [['/list/web/','Dominios'],['/list/db/','Bases de datos']]){
     const item=hostingGroup[1].find(x=>new URL(x[1],location.origin).pathname===path);
     if(item)groups[0][1].push([label,item[1],item[2],item[3]]);
   }
   const shellPath=context.admin?'/list/user/':new URL(hostingGroup[1][0]?.[1]||'/list/web/',location.origin).pathname;
-  if(nativeFileLink){groups[0][1].push(['Archivos y documentos',shellPath+'#archivos','folder-open','Explorar y gestionar los archivos de esta cuenta']);nativeFileLink.href=shellPath+'#archivos';}
+  if(nativeFileLink){const href=context.integratedFiles===false?nativeFileLink.getAttribute('href'):shellPath+'#archivos';groups[0][1].push(['Archivos y documentos',href,'folder-open','Explorar y gestionar los archivos de esta cuenta']);nativeFileLink.href=href;}
   if(context.admin){const index=groups.findIndex(g=>g[0]==='Alojamiento');if(index>2)groups.splice(2,0,groups.splice(index,1)[0]);}
   if (!hostingGroup[1].length && !context.admin) return;
   document.body.classList.add('via-shell');
@@ -89,19 +89,9 @@
   const eyebrow = node('div','via-eyebrow', context.admin ? 'VIRTUAL IA / ADMINISTRACIÓN' : 'VIRTUAL IA / ALOJAMIENTO');
   const title = node('h1'); const sub = node('p'); heading.append(eyebrow,title,sub); content.prepend(heading);
   let dashboard;
-  const files=node('section','vip-files');files.id='vip-files';content.append(files);
-  let fileFrame;
-  const styleFrame=()=>{
-    if(!fileFrame?.contentDocument)return;
-    const doc=fileFrame.contentDocument;if(!doc.head)return;
-    let style=doc.getElementById('vip-file-theme');if(!style){style=doc.createElement('style');style.id='vip-file-theme';doc.head.append(style);}
-    const computed=getComputedStyle(document.documentElement),colors={};
-    for(const key of ['bg','surface','surface-alt','text','heading','border','input','link','hover'])colors[key]=computed.getPropertyValue('--vip-'+key).trim();
-    style.textContent=`body{background:${colors.bg}!important;color:${colors.text}!important}a{color:${colors.link}}.table,.table td,.table th{color:${colors.text};border-color:${colors.border}!important}.table-striped>tbody>tr:nth-of-type(odd),.table-hover>tbody>tr:hover{background:${colors.hover}!important}.dropdown-menu,.modal-content,.card,.breadcrumb,.navbar{background:${colors.surface}!important;color:${colors.text}!important;border-color:${colors.border}!important}.form-control,.form-select,select,input:not([type=checkbox]){background:${colors.input}!important;color:${colors.text}!important;border-color:${colors.border}!important}h1,h2,h3,h4,label{color:${colors.heading}}`;
-    doc.querySelectorAll('a[href]').forEach(a=>{try{const u=new URL(a.href);if(u.origin===location.origin && /^\/(list|edit|logout)\//.test(u.pathname))a.target='_top';}catch{}});
-    window.dispatchEvent(new CustomEvent('vip:files-ready',{detail:{doc,colors}}));
-  };
-  window.addEventListener('vip:appearance',styleFrame);
+  const files=node('section','vip-files');files.id='vip-files';files.setAttribute('aria-label','Gestor de archivos');content.append(files);
+  let fileStarted=false;
+  const footer=document.querySelector('.app-footer');if(footer){footer.append(node('span','vip-product-brand',' · '+(context.appName||'VIP - Virtual IA Panel')+' v1.1.0'));}
   if (context.admin && /^\/list\/user\/?$/.test(location.pathname)) {
     const hint=node('aside','vip-account-hint','Administra cada cuenta desde sus accesos directos. Para aumentar o reducir espacio, ajusta su plan en Recursos. ');
     const plans=node('a','','Administrar planes');plans.href='/list/package/';hint.append(plans);heading.after(hint);
@@ -110,7 +100,7 @@
       if(!cell)return;
       const native=[...row.querySelectorAll('a[href]')].find(a=>{const u=new URL(a.href,location.origin);return u.origin===location.origin && u.pathname==='/login/' && u.searchParams.has('loginas') && u.searchParams.has('token');});
       const actions=node('div','vip-account-actions');
-      for(const [label,target] of [['Web','/list/web/'],['Correo','/list/mail/'],['Bases de datos','/list/db/'],['Recursos','/edit/user/']]){
+      for(const [label,target] of [['Web','/list/web/'],['DNS','/list/dns/'],['Correo','/list/mail/'],['Bases de datos','/list/db/'],['Recursos','/edit/user/']]){
         const a=node('a','',label);
         if(native){const u=new URL(native.href);u.searchParams.set('edit_link',target);a.href=u.pathname+u.search;}
         else if(row.dataset.sortName===context.user){const own=[...row.querySelectorAll('a[href]')].find(a=>new URL(a.href).pathname==='/edit/user/');const u=new URL(target,location.origin);if(own){const token=new URL(own.href).searchParams.get('token');if(token)u.searchParams.set('token',token);}a.href=u.pathname+u.search;}
@@ -121,7 +111,7 @@
     });
   }
   const cards = [];
-  if (context.admin) {
+  if (context.admin && /^\/list\/user\/?$/.test(location.pathname)) {
     dashboard = node('section','via-dashboard'); dashboard.id = 'via-home';
     const server = context.server || {};
     const metrics = node('div','via-metrics');
@@ -133,15 +123,18 @@
     const gib = bytes => (bytes/1073741824).toFixed(1)+' GiB';
     metric('CARGA DEL SISTEMA',server.load ? server.load[0].toFixed(2) : '—','Promedio de 1 minuto');
     const used=server.memoryTotal-server.memoryAvailable;
-    metric('MEMORIA RAM',server.memoryTotal && server.memoryAvailable !== null ? (used/server.memoryTotal*100).toFixed(0)+' %' : '—',server.memoryTotal ? `${gib(used*1024)} de ${gib(server.memoryTotal*1024)}` : 'Sin datos',server.memoryTotal ? used/server.memoryTotal*100 : NaN);
+    const hasMemory=server.memoryTotal && Number.isFinite(server.memoryAvailable);
+    metric('MEMORIA RAM',hasMemory ? (used/server.memoryTotal*100).toFixed(0)+' %' : '—',hasMemory ? `${gib(used*1024)} de ${gib(server.memoryTotal*1024)}` : 'Sin datos',hasMemory ? used/server.memoryTotal*100 : NaN);
     metric('DISCO DISPONIBLE',server.diskTotal ? gib(server.diskFree) : '—',server.diskTotal ? `${gib(server.diskTotal-server.diskFree)} usados de ${gib(server.diskTotal)}` : 'Sin datos',server.diskTotal ? (server.diskTotal-server.diskFree)/server.diskTotal*100 : NaN);
     metric('TIEMPO ACTIVO',server.uptime ? Math.floor(server.uptime/86400)+' días' : '—','Lectura al abrir esta página');
     dashboard.append(metrics);
     const columns=node('div','via-home-columns'); const tools=node('div');
     tools.append(node('h2','','Accesos frecuentes'));
     const favorites=node('div','via-favorites');
-    const favoritePaths=['/list/user/#cuentas','/add/user/','/edit/server/','/list/server/','/list/server/?disk','/list/firewall/'];
+    const favoritesAdded=new Set();
+    const favoritePaths=['/list/user/#cuentas','/add/user/','/list/web/','/list/dns/','/list/ip/','/list/server/'];
     searchable.filter(x=>favoritePaths.includes(x.item[1])).forEach(({item})=>{
+      if(favoritesAdded.has(item[1]))return;favoritesAdded.add(item[1]);
       const a=node('a','via-tool-card');a.href=secureHref(item[1]);const copy=node('div');copy.append(node('strong','',item[0]),node('p','',item[3]));a.append(icon(item[2]),copy);favorites.append(a);cards.push({a,text:item.join(' ')});
     });
     tools.append(favorites,node('h2','','Herramientas del servidor'));
@@ -152,6 +145,11 @@
     const info=node('aside','via-server-info');info.append(node('h2','','Información del servidor'));
     [['Hostname',server.host || '—'],['Usuario',context.user],['Panel','Virtual IA · HestiaCP'],['Sesión','Administración']].forEach(([label,value])=>{info.append(node('small','via-muted',label),node('p','',value));});
     info.append(node('p','via-muted','Los indicadores se actualizan al recargar. Los controles de cada herramienta conservan los permisos y confirmaciones de Hestia.'));
+    const guide=node('details','vip-hosting-guide');guide.append(node('summary','','Preparar un dominio · guía desde cPanel'));
+    const steps=node('ol');
+    for(const text of ['Crea una cuenta de alojamiento y asigna su plan. Equivale a crear una cuenta desde WHM; entra en ella para administrar sus sitios.','Añade el dominio en Dominios web y selecciona una IP disponible del servidor. Puedes preparar el sitio antes de cambiar su DNS público.','Si conservas DNS externo, cambia allí A/AAAA y www. Si Hestia administrará DNS, crea la zona y delega los nameservers en el registrador.','Activa SSL cuando el dominio apunte al servidor. Configura correo y MX solo si también alojarás sus buzones aquí.'])steps.append(node('li','',text));
+    guide.append(steps,node('p','via-muted','El hostname identifica este servidor y puede usar un subdominio independiente. Crear una zona aquí no cambia el DNS del registrador ni traslada el sitio actual.'));
+    tools.prepend(guide);
     columns.append(tools,info);dashboard.append(columns);content.append(dashboard);
   }
   const normalize = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
@@ -163,14 +161,16 @@
   });
   document.addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false);if((e.ctrlKey||e.metaKey)&&e.key==='/'){e.preventDefault();setMenu(true);search.focus();}});
   const update = () => {
-    const isFiles=Boolean(nativeFileLink) && location.pathname===shellPath && location.hash==='#archivos';
+    const isFiles=Boolean(nativeFileLink) && context.integratedFiles!==false && location.pathname===shellPath && location.hash==='#archivos';
     const isDevelopers=context.admin && location.pathname==='/list/user/' && location.hash==='#developers';
     const home=context.admin && /^\/list\/user\/?$/.test(location.pathname) && location.hash!=='#cuentas' && !isFiles && !isDevelopers;
     document.body.classList.toggle('via-is-developers',isDevelopers);
     document.body.classList.toggle('via-is-files',isFiles);
-    if(isFiles && !fileFrame){
-      const enhancement=node('script');enhancement.src='/js/virtualia/files.min.js?v=0.4.1';enhancement.onload=styleFrame;document.head.append(enhancement);
-      fileFrame=node('iframe','vip-file-frame');fileFrame.title='Archivos y documentos';fileFrame.src='/fm/';fileFrame.addEventListener('load',styleFrame);files.append(fileFrame);
+    if(isFiles && !fileStarted){
+      fileStarted=true;
+      const enhancement=node('script');enhancement.src='/js/virtualia/files.min.js?v='+encodeURIComponent(context.assetVersion||'1.0.3');
+      enhancement.onerror=()=>{const status=node('p','vip-files-status','No se pudo cargar el gestor integrado. ');status.setAttribute('role','alert');const fallback=node('a','','Abrir gestor nativo');fallback.href='/fm/';status.append(fallback);files.replaceChildren(status);};
+      document.head.append(enhancement);
     }
     document.body.classList.toggle('via-is-home',home);
     let current;

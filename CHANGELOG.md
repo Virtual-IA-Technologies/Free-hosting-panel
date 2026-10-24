@@ -1,5 +1,42 @@
 # Cambios
 
+## 1.1.0
+
+- Formularios nativos de crear y editar en un lateral, con validación, cancelación de cambios y recuperación de errores. Confirmaciones destructivas conservadas.
+- Doble clic configurable por lista; clic derecho, menú de acciones y acceso con teclado a los controles ofrecidos por Hestia.
+- Formularios de archivos y carpetas en lateral, conservando las operaciones nativas del gestor.
+- Indicador ligero de carga al recargar; oculta el diseño anterior y recupera el panel nativo si falla el recurso principal.
+- Puente de formularios generado desde el JavaScript nativo instalado, descargado solo al abrir un formulario. Sin nuevos endpoints ni dependencias de ejecución.
+- Pruebas de escritorio y móvil, validación y envío simulado sin modificar cuentas.
+
+## 1.0.3
+
+- Nombre del panel, tema inicial y modo del gestor configurables por opciones del instalador, sin datos de despliegue en el código.
+- Gestor nativo opcional para servidores sin FileGator compatible.
+- Versionado automático de recursos según contenido y opciones para renovar la caché al actualizar.
+- Ruta del logo recibido de FileGator resuelta desde /fm/, evitando solicitudes 404 al navegar o recargar Archivos.
+- Prueba de tres recargas, persistencia del tema, caché, carga diferida, recarga directa de Archivos y opción de gestor nativo.
+
+## 1.0.2
+
+- Accesos frecuentes sin destinos duplicados y menú de cuentas normales sin duplicar Dominios y Bases de datos.
+- Versión de recursos actualizada para renovar la caché al instalar la revisión final.
+
+## 1.0.1
+
+- Tema Medium: contenido claro, menú grafito oscuro y letras claras, con persistencia por usuario y navegador.
+
+- FileGator integrado sin iframe, con estilos limitados al gestor y copias adaptadas de los recursos nativos, sin modificar los originales.
+- Corrección del ancho de acciones de archivos en cuadrícula móvil y acceso al gestor nativo ante fallos de carga.
+- Botón Nuevo sin marco duplicado y diálogos de archivo/carpeta centrados sobre la navegación, probados en escritorio y móvil.
+- Inicio construido solo en su pantalla y métricas del sistema leídas únicamente en Inicio y Recursos.
+- Accesos frecuentes a dominios, zonas DNS e IP; acceso DNS por cuenta, guía desde cPanel y aclaraciones sobre hostname, delegación e IP.
+- Ayuda para pruebas antes de cambiar DNS, organización de cuentas bajo /home y acceso único a phpMyAdmin por base de datos.
+- Marca VIP en el título y pie conservando los avisos originales de Hestia.
+- Prueba local del instalador sin privilegios: generación del puente, compatibilidad, conservación de originales y dry-run sin modificaciones.
+- Pruebas de navegación DNS/IP, carga diferida, ausencia de métricas innecesarias y recuperación del gestor ante error de red.
+- Validación de navegación y archivos con una cuenta de alojamiento normal, sin herramientas globales ni métricas del administrador.
+
 ## 0.4.1
 
 - Dominios y Bases de datos añadidos al grupo Panel.

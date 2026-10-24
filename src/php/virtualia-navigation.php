@@ -1,18 +1,26 @@
 <?php
 // Extension loaded by Hestia's authenticated template; direct requests disclose nothing.
+$viaSettings = json_decode(@file_get_contents(dirname(__DIR__) . '/virtualia/config.json') ?: '{}', true);
+$viaSettings = is_array($viaSettings) ? $viaSettings : [];
+$viaOptions = ['defaultTheme' => $viaSettings['defaultTheme'] ?? 'night', 'appName' => $viaSettings['appName'] ?? 'VIP - Virtual IA Panel', 'integratedFiles' => $viaSettings['integratedFiles'] ?? true, 'assetVersion' => $viaSettings['assetVersion'] ?? '1.1.0'];
+$viaVersion = rawurlencode((string) ($viaSettings['assetVersion'] ?? '1.1.0'));
 if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['token'])) {
     $viaAsset = !empty($_SESSION['userContext']) && !empty($_SESSION['user']) ? 'panel' : 'login';
-    echo '<link rel="stylesheet" href="/css/virtualia/' . $viaAsset . '.min.css?v=0.4.1">';
+    echo '<link rel="stylesheet" href="/css/virtualia/' . $viaAsset . '.min.css?v=' . $viaVersion . '">';
 }
 if (empty($_SESSION['userContext']) || empty($_SESSION['user'])) {
     if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['token'])) {
-        echo '<script defer src="/js/virtualia/login.min.js?v=0.4.1"></script>';
+        echo '<script type="application/json" id="via-context">' . json_encode($viaOptions, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_INVALID_UTF8_SUBSTITUTE) . '</script>';
+        echo '<script defer src="/js/virtualia/login.min.js?v=' . $viaVersion . '"></script>';
     }
     return;
 }
 $viaAdmin = $_SESSION['userContext'] === 'admin' && empty($_SESSION['look']);
-$viaContext = ['admin' => $viaAdmin, 'user' => (string) $_SESSION['user'], 'csrfToken' => (string) ($_SESSION['token'] ?? '')];
-if ($viaAdmin) {
+// A failed asset must leave the native panel accessible instead of an endless loader.
+echo '<script>window.vipBootTimer=setTimeout(function(){document.body.classList.add("vip-native-fallback")},8000);</script>';
+$viaContext = ['admin' => $viaAdmin, 'user' => (string) $_SESSION['user'], 'csrfToken' => (string) ($_SESSION['token'] ?? '')] + $viaOptions;
+$viaPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+if ($viaAdmin && in_array(rtrim((string) $viaPath, '/'), ['/list/user', '/list/server'], true)) {
     $viaMemory = [];
     foreach (file('/proc/meminfo', FILE_IGNORE_NEW_LINES) ?: [] as $viaLine) {
         if (preg_match('/^(MemTotal|MemAvailable|MemFree|Cached|Buffers|SwapTotal|SwapFree):\s+(\d+)/', $viaLine, $viaMatch)) {
@@ -49,4 +57,4 @@ if ($viaAdmin) {
 }
 ?>
 <script type="application/json" id="via-context"><?= json_encode($viaContext, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_INVALID_UTF8_SUBSTITUTE) ?></script>
-<script defer src="/js/virtualia/panel.min.js?v=0.4.1"></script>
+<script defer src="/js/virtualia/panel.min.js?v=<?= $viaVersion ?>"></script>

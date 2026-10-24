@@ -1,9 +1,10 @@
 (() => {
   'use strict';
-  let user='login';try{user=JSON.parse(document.getElementById('via-context')?.textContent || '{}').user || user;}catch{}
-  const key=`virtual-ia-panel:appearance:${user}`,themes={night:'Azul noche',graphite:'Grafito',light:'Claro'};
-  const defaults={theme:'night',scale:100,opacity:12,menu:'',content:''};let settings={...defaults};
-  try{const saved=JSON.parse(localStorage.getItem(key));if(saved && typeof saved==='object')settings={...defaults,...saved};else settings.theme=localStorage.getItem(`virtual-ia-panel:theme:${user}`)||'night';}catch{}
+  let user='login',defaultTheme='night';try{const context=JSON.parse(document.getElementById('via-context')?.textContent || '{}');user=context.user||user;defaultTheme=context.defaultTheme||defaultTheme;}catch{}
+  const key=`virtual-ia-panel:appearance:${user}`,themes={night:'Azul noche',graphite:'Grafito',medium:'Medium',light:'Claro'};
+  if(!Object.hasOwn(themes,defaultTheme))defaultTheme='night';
+  const defaults={theme:defaultTheme,scale:100,opacity:12,menu:'',content:''};let settings={...defaults};
+  try{const saved=JSON.parse(localStorage.getItem(key));if(saved && typeof saved==='object')settings={...defaults,...saved};else settings.theme=localStorage.getItem(`virtual-ia-panel:theme:${user}`)||defaultTheme;}catch{}
   if(!Object.hasOwn(themes,settings.theme))settings.theme='night';
   settings.scale=Math.min(125,Math.max(80,Number(settings.scale)||100));settings.opacity=Math.min(40,Math.max(0,Number.isFinite(Number(settings.opacity))?Number(settings.opacity):12));
   const image=s=>typeof s==='string' && /^data:image\/(webp|png|jpeg);base64,[a-zA-Z0-9+/=]+$/.test(s) && s.length<1100000?s:'';

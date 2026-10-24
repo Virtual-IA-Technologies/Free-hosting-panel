@@ -24,6 +24,10 @@
 .via-dashboard{padding:0 28px 24px;display:none}.via-is-home #via-home{display:block}
 .via-is-home .app-content>:not(.via-page-heading):not(#via-home){display:none!important}
 .via-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:28px}
+.vip-hosting-guide{padding:18px;margin-bottom:24px;border:1px solid var(--vip-border);border-radius:8px;background:var(--vip-surface);font-size:13px;line-height:1.8}
+.vip-hosting-guide summary{cursor:pointer;color:var(--vip-heading);font-weight:500}
+.vip-hosting-guide ol{padding-left:22px;margin:14px 0}.vip-hosting-guide li{margin:8px 0;color:var(--vip-text)}
+.vip-preview-guide{margin:0 28px 22px}.vip-preview-guide p{margin:12px 0;color:var(--vip-muted)}.vip-preview-guide code{display:block;white-space:normal;overflow-wrap:anywhere;color:var(--vip-link)}
 .via-metric{background:var(--vip-surface);border:1px solid var(--via-line);border-radius:9px;padding:19px;display:flex;flex-direction:column;gap:10px}
 .via-metric>span{font-size:10px;letter-spacing:1px}.via-metric strong{font-size:27px;line-height:1.2;color:var(--vip-heading);font-weight:550}.via-metric small{font-size:11px}
 .via-metric progress{width:100%;height:5px;border:0;border-radius:4px;accent-color:#21b9f2;background:#293c55}.via-metric progress::-webkit-progress-bar{background:#293c55;border-radius:4px}.via-metric progress::-webkit-progress-value{background:#27c1f7;border-radius:4px}
