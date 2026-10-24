@@ -27,12 +27,17 @@ python3 scripts/uninstall.py /opt/virtual-ia-panel/backups/FECHA
 - Cortafuegos: reglas, direcciones y bloqueos en las pantallas de Hestia; el tema no modifica reglas de red.
 - phpMyAdmin: abrir la base desde el icono nativo de acceso único en Bases de datos. Las claves del sistema operativo y las credenciales SQL son independientes.
 - Temas por navegador y usuario: Azul noche, Grafito y Claro. Los errores y operaciones peligrosas mantienen su significado visual.
+- Personalizar apariencia (engranaje junto al tema): escala de 80 a 125 %, imágenes independientes para menú/contenido, intensidad y restablecimiento. Los fondos se optimizan en el navegador y no se envían al servidor. Se aceptan JPG, PNG y WebP; el almacenamiento es local a cada usuario/navegador.
+- Indicadores específicos por vista: Disco muestra particiones, inodos y tasas de I/O cuando están presentes en el informe; Memoria muestra RAM y swap; CPU muestra carga de 1, 5 y 15 minutos; Red muestra contadores por interfaz. La carga no equivale a utilización de CPU. Los valores se leen al abrir la página y el detalle técnico permanece visible. Las cuotas de cuentas con límite incluyen barras de uso.
+- El gestor de archivos se abre dentro del panel, conservando navegación, sesión y permisos nativos. Se carga únicamente al abrir Archivos y documentos.
 
 ## Arquitectura y límites
 
 `src/php/virtualia-navigation.php` añade el contexto mínimo de sesión y métricas solo para administradores sin suplantación. No publica contraseñas ni añade una API. Las rutas de Hestia conservan su validación de permisos y CSRF. La mejora de presentación mantiene formularios y acciones de Hestia; no replica funciones exclusivas de WHM. Instalar este proyecto no crea clientes, cuentas SQL, correo, dominios, reglas de red ni registros DNS.
 
 Para actualizaciones mayores de Hestia, comprobar compatibilidad del cargador y ejecutar la validación antes de reinstalar. La copia de recursos instalada se conserva fuera del árbol de Hestia y un hook oficial permite reponerla.
+
+Los enlaces de recursos con parámetros incluyen el token de la sesión nativa. Se deben seguir desde la navegación del panel; no compartir ni reutilizar URLs con tokens de otra sesión. No se desactiva la comprobación de CSRF o del origen.
 
 ## Publicación y licencia
 

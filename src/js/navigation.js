@@ -5,6 +5,10 @@
   const content = document.querySelector('.app-content');
   if (!contextNode || !content || document.getElementById('via-sidebar')) return;
   const context = JSON.parse(contextNode.textContent);
+  const token=context.csrfToken || document.getElementById('token')?.getAttribute('token');
+  const secureHref=href=>{const u=new URL(href,location.origin);if(u.origin===location.origin && u.search && token && !u.searchParams.has('token'))u.searchParams.set('token',token);return u.pathname+u.search+u.hash;};
+  const comparableSearch=value=>{const p=new URLSearchParams(value);p.delete('token');return p.toString();};
+  const nativeFileLink=[...document.querySelectorAll('.top-bar-menu a[href]')].find(a=>new URL(a.href).pathname==='/fm/');
   const nativeLinks = [...document.querySelectorAll('.main-menu-item-link')];
   const node = (tag, cls, text) => {
     const e = document.createElement(tag);
@@ -42,17 +46,20 @@
     const part = u.pathname.split('/').filter(Boolean)[1]?.toUpperCase();
     if (labels[part]) hostingGroup[1].push([labels[part][0], u.pathname + u.search, labels[part][1], a.querySelector('.main-menu-stats')?.textContent.replace(/\s+/g, ' ').trim() || 'Administrar este servicio']);
   });
+  const shellPath=context.admin?'/list/user/':new URL(hostingGroup[1][0]?.[1]||'/list/web/',location.origin).pathname;
+  if(nativeFileLink){groups[0][1].push(['Archivos y documentos',shellPath+'#archivos','folder-open','Explorar y gestionar los archivos de esta cuenta']);nativeFileLink.href=shellPath+'#archivos';}
+  if(context.admin){const index=groups.findIndex(g=>g[0]==='Alojamiento');if(index>2)groups.splice(2,0,groups.splice(index,1)[0]);}
   if (!hostingGroup[1].length && !context.admin) return;
   document.body.classList.add('via-shell');
   const sidebar = node('aside', 'via-sidebar'); sidebar.id = 'via-sidebar'; sidebar.setAttribute('aria-label', 'Administración Virtual IA');
   const brand = node('a', 'via-brand'); brand.href = context.admin ? '/list/user/#inicio' : hostingGroup[1][0][1];
   const logo = node('img'); logo.src = '/images/logo-header.svg?v=20261024-3'; logo.alt = 'Virtual IA Technologies'; brand.append(logo);
-  sidebar.append(brand, node('div', 'via-caption', context.admin ? 'ADMINISTRACIÓN DEL SERVIDOR' : 'PANEL DE ALOJAMIENTO'));
+  sidebar.append(brand, node('div', 'via-caption', context.admin ? 'VIRTUAL IA PANEL / ACCESO VIP' : 'VIRTUAL IA PANEL / ALOJAMIENTO'));
   const search = node('input', 'via-search'); search.type = 'search'; search.placeholder = 'Buscar herramientas…'; search.setAttribute('aria-label', 'Buscar herramientas');
   sidebar.append(search);
   const nav = node('nav', 'via-nav'); const searchable = [];
   const linkFor = item => {
-    const a = node('a', 'via-link'); a.href = item[1]; a.append(icon(item[2]), node('span', '', item[0])); return a;
+    const a = node('a', 'via-link'); a.href = secureHref(item[1]); a.append(icon(item[2]), node('span', '', item[0])); return a;
   };
   groups.filter(g => g[1].length).forEach(([title, items]) => {
     const details = node('details', 'via-group'); details.open = true;
@@ -72,6 +79,36 @@
   const eyebrow = node('div','via-eyebrow', context.admin ? 'VIRTUAL IA / ADMINISTRACIÓN' : 'VIRTUAL IA / ALOJAMIENTO');
   const title = node('h1'); const sub = node('p'); heading.append(eyebrow,title,sub); content.prepend(heading);
   let dashboard;
+  const files=node('section','vip-files');files.id='vip-files';content.append(files);
+  let fileFrame;
+  const styleFrame=()=>{
+    if(!fileFrame?.contentDocument)return;
+    const doc=fileFrame.contentDocument;if(!doc.head)return;
+    let style=doc.getElementById('vip-file-theme');if(!style){style=doc.createElement('style');style.id='vip-file-theme';doc.head.append(style);}
+    const computed=getComputedStyle(document.documentElement),colors={};
+    for(const key of ['bg','surface','surface-alt','text','heading','border','input','link','hover'])colors[key]=computed.getPropertyValue('--vip-'+key).trim();
+    style.textContent=`body{background:${colors.bg}!important;color:${colors.text}!important}a{color:${colors.link}}.table,.table td,.table th{color:${colors.text};border-color:${colors.border}!important}.table-striped>tbody>tr:nth-of-type(odd),.table-hover>tbody>tr:hover{background:${colors.hover}!important}.dropdown-menu,.modal-content,.card,.breadcrumb,.navbar{background:${colors.surface}!important;color:${colors.text}!important;border-color:${colors.border}!important}.form-control,.form-select,select,input:not([type=checkbox]){background:${colors.input}!important;color:${colors.text}!important;border-color:${colors.border}!important}h1,h2,h3,h4,label{color:${colors.heading}}`;
+    doc.querySelectorAll('a[href]').forEach(a=>{try{const u=new URL(a.href);if(u.origin===location.origin && /^\/(list|edit|logout)\//.test(u.pathname))a.target='_top';}catch{}});
+  };
+  window.addEventListener('vip:appearance',styleFrame);
+  if (context.admin && /^\/list\/user\/?$/.test(location.pathname)) {
+    const hint=node('aside','vip-account-hint','Administra cada cuenta desde sus accesos directos. Para aumentar o reducir espacio, ajusta su plan en Recursos. ');
+    const plans=node('a','','Administrar planes');plans.href='/list/package/';hint.append(plans);heading.after(hint);
+    document.querySelectorAll('.js-unit[data-sort-name]').forEach(row=>{
+      const cell=row.querySelector('.units-table-heading-cell');
+      if(!cell)return;
+      const native=[...row.querySelectorAll('a[href]')].find(a=>{const u=new URL(a.href,location.origin);return u.origin===location.origin && u.pathname==='/login/' && u.searchParams.has('loginas') && u.searchParams.has('token');});
+      const actions=node('div','vip-account-actions');
+      for(const [label,target] of [['Web','/list/web/'],['Correo','/list/mail/'],['Bases de datos','/list/db/'],['Recursos','/edit/user/']]){
+        const a=node('a','',label);
+        if(native){const u=new URL(native.href);u.searchParams.set('edit_link',target);a.href=u.pathname+u.search;}
+        else if(row.dataset.sortName===context.user){const own=[...row.querySelectorAll('a[href]')].find(a=>new URL(a.href).pathname==='/edit/user/');const u=new URL(target,location.origin);if(own){const token=new URL(own.href).searchParams.get('token');if(token)u.searchParams.set('token',token);}a.href=u.pathname+u.search;}
+        else continue;
+        actions.append(a);
+      }
+      if(actions.childElementCount)cell.append(actions);
+    });
+  }
   const cards = [];
   if (context.admin) {
     dashboard = node('section','via-dashboard'); dashboard.id = 'via-home';
@@ -94,7 +131,7 @@
     const favorites=node('div','via-favorites');
     const favoritePaths=['/list/user/#cuentas','/add/user/','/edit/server/','/list/server/','/list/server/?disk','/list/firewall/'];
     searchable.filter(x=>favoritePaths.includes(x.item[1])).forEach(({item})=>{
-      const a=node('a','via-tool-card');a.href=item[1];const copy=node('div');copy.append(node('strong','',item[0]),node('p','',item[3]));a.append(icon(item[2]),copy);favorites.append(a);cards.push({a,text:item.join(' ')});
+      const a=node('a','via-tool-card');a.href=secureHref(item[1]);const copy=node('div');copy.append(node('strong','',item[0]),node('p','',item[3]));a.append(icon(item[2]),copy);favorites.append(a);cards.push({a,text:item.join(' ')});
     });
     tools.append(favorites,node('h2','','Herramientas del servidor'));
     groups.filter(g=>g[0]!=='Panel'&&g[1].length).forEach(([label,items])=>{
@@ -115,15 +152,18 @@
   });
   document.addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false);if((e.ctrlKey||e.metaKey)&&e.key==='/'){e.preventDefault();setMenu(true);search.focus();}});
   const update = () => {
-    const home=context.admin && /^\/list\/user\/?$/.test(location.pathname) && location.hash!=='#cuentas';
+    const isFiles=Boolean(nativeFileLink) && location.pathname===shellPath && location.hash==='#archivos';
+    const home=context.admin && /^\/list\/user\/?$/.test(location.pathname) && location.hash!=='#cuentas' && !isFiles;
+    document.body.classList.toggle('via-is-files',isFiles);
+    if(isFiles && !fileFrame){fileFrame=node('iframe','vip-file-frame');fileFrame.title='Archivos y documentos';fileFrame.src='/fm/';fileFrame.addEventListener('load',styleFrame);files.append(fileFrame);}
     document.body.classList.toggle('via-is-home',home);
     let current;
     searchable.forEach(x=>{
       const u=new URL(x.a.href,location.origin);
-      const active=u.pathname===location.pathname && u.search===location.search && (u.hash ? (home?u.hash==='#inicio':u.hash===location.hash) : true);
+      const active=u.pathname===location.pathname && comparableSearch(u.search)===comparableSearch(location.search) && (u.hash ? (home?u.hash==='#inicio':u.hash===location.hash) : true);
       x.a.classList.toggle('via-active',active);if(active){x.a.setAttribute('aria-current','page');current=x.item;}else x.a.removeAttribute('aria-current');
     });
-    title.textContent=home?'Inicio del servidor':current?.[0] || (location.pathname.startsWith('/edit/')?'Configuración':'Administración');
+    title.textContent=isFiles?'Archivos y documentos':home?'Inicio del servidor':current?.[0] || (location.pathname.startsWith('/edit/')?'Configuración':'Administración');
     sub.textContent=home ? `Gestiona tus cuentas, servicios y recursos · ${context.server?.host || ''}` : 'Inicio / '+title.textContent;
   };
   window.addEventListener('hashchange',update);update();

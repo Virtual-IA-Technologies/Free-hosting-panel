@@ -8,7 +8,7 @@
     const e = document.createElement(tag); e.className = cls; e.textContent = text;
     section.append(e);
   };
-  add('p', 'via-login-eyebrow', 'VIRTUAL IA / PANEL DE ADMINISTRACIÓN');
+  add('p', 'via-login-eyebrow', 'VIRTUAL IA PANEL / ACCESO VIP');
   add('h2', 'via-login-headline', 'Tu infraestructura,\nen un solo lugar.');
   add('p', 'via-login-description', 'Gestiona cuentas, sitios y servicios desde un entorno claro, seguro y conectado.');
   add('p', 'via-login-topics', 'Hosting  ·  Servicios  ·  Seguridad');
