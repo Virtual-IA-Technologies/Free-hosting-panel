@@ -15,13 +15,11 @@ MAPPING = {
     'src/images/logo.svg': 'web/images/custom/logo.svg',
     'src/images/logo-header.svg': 'web/images/custom/logo-header.svg',
     'src/images/logo-header-light.svg': 'web/images/custom/logo-header-light.svg',
-    'src/css/virtualia.css': 'web/css/themes/custom/virtualia.css',
-    'src/css/navigation.css': 'web/css/virtualia/navigation.css',
-    'src/css/appearance.css': 'web/css/virtualia/appearance.css',
-    'src/js/navigation.js': 'web/js/virtualia/navigation.js',
-    'src/js/login.js': 'web/js/virtualia/login.js',
-    'src/js/appearance.js': 'web/js/virtualia/appearance.js',
-    'src/js/resources.js': 'web/js/virtualia/resources.js',
+    'dist/virtualia.min.css': 'web/css/themes/custom/virtualia.css',
+    'dist/panel.min.css': 'web/css/virtualia/panel.min.css',
+    'dist/login.min.css': 'web/css/virtualia/login.min.css',
+    'dist/panel.min.js': 'web/js/virtualia/panel.min.js',
+    'dist/login.min.js': 'web/js/virtualia/login.min.js',
     'src/php/virtualia-navigation.php': 'web/js/custom_scripts/virtualia-navigation.php',
 }
 

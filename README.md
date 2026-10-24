@@ -4,6 +4,8 @@ Panel de administración con identidad Virtual IA, construido como una extensió
 
 ## Instalación
 
+Versión 0.4.0. Los artefactos optimizados están en `dist`; el servidor no necesita Node. Para modificar recursos: `npm ci`, `npm run build` y `npm run check` en el equipo de desarrollo.
+
 Requiere HestiaCP instalado y su cargador `web/js/custom_scripts`. Copiar este proyecto al servidor y ejecutar como root:
 
 ```sh
@@ -32,6 +34,10 @@ python3 scripts/uninstall.py /opt/virtual-ia-panel/backups/FECHA
 - El gestor de archivos se abre dentro del panel, conservando navegación, sesión y permisos nativos. Se carga únicamente al abrir Archivos y documentos.
 
 ## Arquitectura y límites
+
+En **Herramientas y Developers** hay accesos directos a PHP global, destinos, retención incremental, correo y claves API. Se abre la sección nativa correspondiente sin alterar sus formularios. Developers permite exportar un perfil sin secretos y guardar accesos externos por navegador. Proveedores, autorización inicial, alcance PHP y pendientes de IA se describen en [Integraciones](docs/integrations.md).
+
+El panel carga un CSS y un JS propios por pantalla; el login usa un paquete separado. Los recursos se minifican con una versión fijada de esbuild y se validan con `npm run check`. No se cachean páginas autenticadas ni se agregan bibliotecas de interfaz en producción.
 
 `src/php/virtualia-navigation.php` añade el contexto mínimo de sesión y métricas solo para administradores sin suplantación. No publica contraseñas ni añade una API. Las rutas de Hestia conservan su validación de permisos y CSRF. La mejora de presentación mantiene formularios y acciones de Hestia; no replica funciones exclusivas de WHM. Instalar este proyecto no crea clientes, cuentas SQL, correo, dominios, reglas de red ni registros DNS.
 

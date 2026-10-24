@@ -1,5 +1,15 @@
 # Cambios
 
+## 0.4.0
+
+- Recursos minificados y agrupados: dos solicitudes propias por pantalla; login separado.
+- Compilación reproducible con esbuild fijado y artefactos incluidos para instalar sin Node.
+- Accesos a las secciones nativas de PHP, destinos, retención, correo y API.
+- Developers con exportación de perfil sin claves y accesos HTTPS externos editables.
+- Aviso del alcance compartido del editor PHP global; diferenciación de configuración por dominio.
+- Asistente de almacenamiento mediante Rclone, sin proveedor ni cuenta fija, y documentación de conexiones pendientes.
+- Validación real de navegación, temas, gráficos, archivos, accesos externos y secciones de configuración.
+
 ## 0.3.4
 
 - Alojamiento antes de Configuración del servidor.

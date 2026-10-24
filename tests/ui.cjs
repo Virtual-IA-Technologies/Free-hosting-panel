@@ -48,11 +48,25 @@ const {chromium}=require('playwright-core');
   await page.goto(base+'/list/user/#cuentas',{waitUntil:'networkidle'});
   assert(await page.locator('.vip-account-actions').count()>0,'Faltan accesos de cuentas');assert(await page.locator('.vip-quota-meter').count()>0,'Faltan barras de cuota');
   const gap=await page.evaluate(()=>document.querySelector('.units-table').getBoundingClientRect().top-document.querySelector('.toolbar').getBoundingClientRect().bottom);assert(gap>=20,'Tablas sin separación');
+  await page.locator('#via-sidebar a[href$="#developers"]').click();
+  assert(await page.locator('#vip-developers').isVisible(),'Developers no visible');
+  assert(!await page.locator('#via-home').isVisible(),'Inicio mezclado con Developers');
+  await page.getByRole('textbox',{name:'Nombre de la herramienta'}).fill('Prueba temporal');
+  await page.getByRole('textbox',{name:'https://herramienta.ejemplo'}).fill('https://example.com');
+  await page.getByRole('button',{name:'Añadir acceso'}).click();
+  assert(await page.locator('.vip-external-tool a').last().getAttribute('rel')==='noopener noreferrer','Acceso externo inseguro');
+  await page.locator('.vip-external-tool').last().getByRole('button',{name:'Quitar'}).click();
+  for(const [hash,selector] of [['php','#v_php_default_version'],['backups','#v_backup'],['retention','#v_backup_incremental'],['mail','#v_webmail_alias']]){
+   await page.locator(`#via-sidebar a[href$="#vip-${hash}"]`).click();await page.waitForLoadState('networkidle');
+   assert(await page.locator(selector).evaluate(e=>e.closest('details').open),'Sección cerrada: '+hash);
+   assert(await page.locator('.vip-account-hint').count()>0,'Falta contexto: '+hash);
+  }
+  await page.goto(base+'/list/user/#cuentas',{waitUntil:'networkidle'});
   await page.setViewportSize({width:390,height:844});assert(await page.evaluate(()=>document.querySelector('.top-bar-right').getBoundingClientRect().right<=innerWidth+1),'Barra móvil fuera de pantalla');await page.setViewportSize({width:1440,height:1000});
   const fileLink=page.locator('#via-sidebar a[href$="#archivos"]');if(await fileLink.count()){
     await fileLink.click();const frame=page.frameLocator('.vip-file-frame');await frame.locator('table').first().waitFor({timeout:20000});
     assert(new URL(page.url()).hash==='#archivos','El gestor sale del panel');assert(await page.locator('#via-sidebar').isVisible(),'Sin menú en archivos');
   }
-  assert(errors.length===0,errors.join('; '));console.log(JSON.stringify({result:'PASS',contrast:'>=4.5',resources,appearance:'scale/backgrounds/persistence/reset OK',tables:'24px',files:'inside panel',javascriptErrors:errors},null,2));
+  assert(errors.length===0,errors.join('; '));console.log(JSON.stringify({result:'PASS',contrast:'>=4.5',resources,appearance:'scale/backgrounds/persistence/reset OK',tables:'24px',files:'inside panel',developers:'external tools and native configuration shortcuts OK',javascriptErrors:errors},null,2));
  }finally{await browser.close();}
 })().catch(e=>{console.error(e.message);process.exit(1);});

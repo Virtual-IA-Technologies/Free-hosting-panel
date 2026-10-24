@@ -1,0 +1,15 @@
+{
+  "name": "virtual-ia-panel",
+  "version": "0.4.0",
+  "private": true,
+  "description": "Extension de administracion para HestiaCP con identidad Virtual IA",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "build": "node scripts/build.cjs",
+    "check": "node scripts/build.cjs --check",
+    "test:ui": "node tests/ui.cjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

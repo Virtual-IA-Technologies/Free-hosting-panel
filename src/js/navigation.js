@@ -35,6 +35,12 @@
       ['Red del servidor', '/list/server/?net', 'exchange-alt', 'Información de las interfaces de red'],
       ['Estadísticas de cuentas', '/list/stats/', 'chart-line', 'Consumo registrado por usuario']]],
     ['Alojamiento', []],
+    ['Herramientas y Developers', [
+      ['PHP del servidor', '/edit/server/#vip-php', 'code', 'Versiones instaladas y versión predeterminada global'],
+      ['Respaldos y destinos', '/edit/server/#vip-backups', 'archive', 'Compresión, almacenamiento local y externo'],
+      ['Retención de respaldos', '/edit/server/#vip-retention', 'calendar-alt', 'Copias incrementales: diarias, semanales, mensuales y anuales'],
+      ['Correo y protección', '/edit/server/#vip-mail', 'envelope', 'Servicios de correo, antispam y antivirus disponible'],
+      ['Developers e integraciones', '/list/user/#developers', 'plug', 'API, claves de acceso y herramientas externas']]],
     ['Seguridad y registros', [
       ['Cortafuegos', '/list/firewall/', 'shield-alt', 'Reglas de acceso y protección de red'],
       ['Registro de actividad', '/list/log/', 'history', 'Historial de acciones del panel']]]
@@ -153,7 +159,9 @@
   document.addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false);if((e.ctrlKey||e.metaKey)&&e.key==='/'){e.preventDefault();setMenu(true);search.focus();}});
   const update = () => {
     const isFiles=Boolean(nativeFileLink) && location.pathname===shellPath && location.hash==='#archivos';
-    const home=context.admin && /^\/list\/user\/?$/.test(location.pathname) && location.hash!=='#cuentas' && !isFiles;
+    const isDevelopers=context.admin && location.pathname==='/list/user/' && location.hash==='#developers';
+    const home=context.admin && /^\/list\/user\/?$/.test(location.pathname) && location.hash!=='#cuentas' && !isFiles && !isDevelopers;
+    document.body.classList.toggle('via-is-developers',isDevelopers);
     document.body.classList.toggle('via-is-files',isFiles);
     if(isFiles && !fileFrame){fileFrame=node('iframe','vip-file-frame');fileFrame.title='Archivos y documentos';fileFrame.src='/fm/';fileFrame.addEventListener('load',styleFrame);files.append(fileFrame);}
     document.body.classList.toggle('via-is-home',home);

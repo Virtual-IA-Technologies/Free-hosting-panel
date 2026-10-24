@@ -107,3 +107,14 @@
 .vip-account-hint{margin:0 28px 22px;padding:14px 18px;border:1px solid var(--vip-border);border-radius:8px;background:var(--vip-surface);color:var(--vip-muted);font-size:12px;line-height:1.8}
 .vip-account-hint a{color:var(--vip-link)}
 .via-is-home .vip-account-hint{display:none}
+.vip-developers{display:none;margin:24px 28px;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.via-is-developers .vip-developers{display:grid}
+.via-is-developers .app-content>:not(.via-page-heading):not(.vip-developers){display:none!important}
+.vip-integration-card{border:1px solid var(--vip-border);border-radius:10px;padding:23px;background:var(--vip-surface);color:var(--vip-text);min-width:0}
+.vip-integration-card h2{font-size:18px;font-weight:400;color:var(--vip-heading);margin:0 0 15px}
+.vip-integration-card p{font-size:13px;line-height:1.8;color:var(--vip-muted);margin-bottom:15px}
+.vip-integration-card code{display:block;overflow-wrap:anywhere;margin:16px 0;color:var(--vip-link)}
+.vip-tools-form{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.vip-tools-form input{background:var(--vip-input);color:var(--vip-text);border:1px solid var(--vip-border);padding:12px;border-radius:6px;width:100%;box-sizing:border-box}
+.vip-external-tool{display:flex;align-items:center;justify-content:space-between;gap:10px}
+@media(max-width:1000px){.vip-developers{grid-template-columns:1fr}}

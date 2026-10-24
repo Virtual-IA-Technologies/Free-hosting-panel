@@ -1,12 +1,12 @@
 <?php
 // Extension loaded by Hestia's authenticated template; direct requests disclose nothing.
 if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['token'])) {
-    echo '<link rel="stylesheet" href="/css/virtualia/appearance.css?v=0.3.3">';
-    echo '<script defer src="/js/virtualia/appearance.js?v=0.3.3"></script>';
+    $viaAsset = !empty($_SESSION['userContext']) && !empty($_SESSION['user']) ? 'panel' : 'login';
+    echo '<link rel="stylesheet" href="/css/virtualia/' . $viaAsset . '.min.css?v=0.4.0">';
 }
 if (empty($_SESSION['userContext']) || empty($_SESSION['user'])) {
     if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['token'])) {
-        echo '<script defer src="/js/virtualia/login.js?v=0.3.3"></script>';
+        echo '<script defer src="/js/virtualia/login.min.js?v=0.4.0"></script>';
     }
     return;
 }
@@ -48,7 +48,5 @@ if ($viaAdmin) {
     ];
 }
 ?>
-<link rel="stylesheet" href="/css/virtualia/navigation.css?v=0.3.3">
 <script type="application/json" id="via-context"><?= json_encode($viaContext, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_INVALID_UTF8_SUBSTITUTE) ?></script>
-<script defer src="/js/virtualia/navigation.js?v=0.3.3"></script>
-<script defer src="/js/virtualia/resources.js?v=0.3.3"></script>
+<script defer src="/js/virtualia/panel.min.js?v=0.4.0"></script>
