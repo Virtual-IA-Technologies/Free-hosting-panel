@@ -6,6 +6,7 @@ const {chromium}=require('playwright-core');
  const browser=await chromium.launch({...(process.env.VIP_BROWSER_EXECUTABLE?{executablePath:process.env.VIP_BROWSER_EXECUTABLE}:{channel:'chrome'}),headless:true});
  try{
   const ctx=await browser.newContext({viewport:{width:1440,height:1000}}),page=await ctx.newPage(),errors=[];
+  await require('./preview.cjs')(ctx);
   page.on('pageerror',e=>errors.push(e.message));
   const assert=(v,message)=>{if(!v)throw Error(message);};
   await page.goto(base+'/login/');await page.locator('#username').fill(user);await page.locator('#login-form button[type=submit]').click();
@@ -25,7 +26,8 @@ const {chromium}=require('playwright-core');
    const modal=frame.locator('.dialog.modal.is-active');await modal.waitFor();
    assert(await modal.evaluate(e=>{const r=e.getBoundingClientRect();return r.left>=-1&&r.top>=-1&&Math.abs(r.width-innerWidth)<=1&&Math.abs(r.height-innerHeight)<=1;}),'Diálogo fuera de pantalla: '+label);
    assert(await page.evaluate(()=>Boolean(document.elementFromPoint(10,innerHeight/2)?.closest('#vip-files .modal'))),'Diálogo detrás del menú: '+label);
-   assert(await modal.locator('.modal-card').evaluate(e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth+1;}),'Formulario fuera de pantalla: '+label);
+   const card=await modal.locator('.modal-card').evaluate(e=>{const r=e.getBoundingClientRect();return{left:r.left,right:r.right,width:r.width,viewport:innerWidth};});
+   assert(card.left>=0&&card.right<=card.viewport+1,'Formulario fuera de pantalla: '+label+' '+JSON.stringify(card));
    await page.keyboard.press('Escape');await modal.waitFor({state:'hidden'});
   };
   await checkDialog('Carpeta');await checkDialog('Archivo');

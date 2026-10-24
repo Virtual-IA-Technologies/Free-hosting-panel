@@ -1,5 +1,11 @@
 # Cambios
 
+## 1.1.1
+
+- Formularios laterales de archivos sin el zoom heredado de FileGator, evitando desbordamientos durante la apertura.
+- Prueba de archivos con selección explícita de los recursos locales al usar el modo de revisión; comprobación de límites antes de terminar la animación.
+- Guía pública de instalación, seguridad y contribuciones; dependencia de pruebas fijada y verificación automática de artefactos, instalador y patrones de secretos.
+
 ## 1.1.0
 
 - Formularios nativos de crear y editar en un lateral, con validación, cancelación de cambios y recuperación de errores. Confirmaciones destructivas conservadas.

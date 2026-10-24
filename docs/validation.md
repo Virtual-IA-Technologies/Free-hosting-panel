@@ -1,8 +1,10 @@
-# Validación de la versión 1.1.0
+# Validación de la versión 1.1.1
 
 Revisión del 24 de octubre de 2026 sobre HestiaCP 1.10.5.
 
-Añadido en 1.1.0: laterales de alta/edición, restauración del formulario de fondo, generador nativo de contraseña, confirmación al descartar cambios y ancho móvil de 390 px. Doble clic, clic derecho y preferencias por lista comprobados. Los POST de validación y éxito se interceptan y simulan: no se escriben recursos reales.
+En 1.1.1 se corrigió el zoom heredado de los formularios de archivos. La prueba verifica los límites al abrir, sin esperar a que una animación oculte el desbordamiento, y conserva la comprobación móvil.
+
+Añadido en 1.1.1: laterales de alta/edición, restauración del formulario de fondo, generador nativo de contraseña, confirmación al descartar cambios y ancho móvil de 390 px. Doble clic, clic derecho y preferencias por lista comprobados. Los POST de validación y éxito se interceptan y simulan: no se escriben recursos reales.
 
 La prueba de recarga retrasa la descarga del JavaScript y comprueba que se oculta el diseño nativo, se muestra «Cargando…» y aparece el panel al terminar. También aborta la descarga para verificar la recuperación nativa tras ocho segundos. Ambas pruebas pasaron en el servidor de revisión, sin errores JavaScript ni respuestas HTTP de error en el recorrido normal.
 

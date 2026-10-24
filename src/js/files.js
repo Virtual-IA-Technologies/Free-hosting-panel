@@ -39,6 +39,7 @@
    .modal .modal-card,.modal .modal-content{width:640px!important;max-width:100%!important;max-height:calc(100dvh - 40px)!important;margin:0 auto!important}
    .dialog.modal .modal-card{width:460px!important}
    .modal:not(.dialog),.dialog.modal:has(input.input):not(:has(.button.is-danger)){padding:0!important;align-items:stretch!important;justify-content:flex-end!important}
+   .modal:not(.dialog) .animation-content,.dialog.modal:has(input.input):not(:has(.button.is-danger)) .animation-content{transform:none!important;transition:none!important;animation:none!important}
    .modal:not(.dialog)>.modal-content,.modal:not(.dialog)>.modal-card,.dialog.modal:has(input.input):not(:has(.button.is-danger)) .modal-card{display:flex!important;flex-direction:column!important;width:min(672px,100vw)!important;max-width:100%!important;height:100dvh!important;max-height:100dvh!important;margin:0!important;border-radius:0!important;border-left:1px solid ${c.border}!important;box-shadow:-12px 0 48px #02081838!important}
    .modal:not(.dialog) .modal-card-head,.dialog.modal:has(input.input):not(:has(.button.is-danger)) .modal-card-head{flex-shrink:0;padding:26px 30px;border-bottom:1px solid ${c.border}}
    .modal:not(.dialog) .modal-card-body,.dialog.modal:has(input.input):not(:has(.button.is-danger)) .modal-card-body{flex:1;min-height:0;overflow-y:auto;padding:26px 30px;overscroll-behavior:contain}
