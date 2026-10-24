@@ -2,12 +2,12 @@
 // Extension loaded by Hestia's authenticated template; direct requests disclose nothing.
 $viaSettings = json_decode(@file_get_contents(dirname(__DIR__) . '/virtualia/config.json') ?: '{}', true);
 $viaSettings = is_array($viaSettings) ? $viaSettings : [];
-$viaOptions = ['defaultTheme' => $viaSettings['defaultTheme'] ?? 'night', 'appName' => $viaSettings['appName'] ?? 'VIP - Virtual IA Panel', 'integratedFiles' => $viaSettings['integratedFiles'] ?? true, 'assetVersion' => $viaSettings['assetVersion'] ?? '1.2.1'];
+$viaOptions = ['defaultTheme' => $viaSettings['defaultTheme'] ?? 'night', 'appName' => $viaSettings['appName'] ?? 'VIP - Virtual IA Panel', 'integratedFiles' => $viaSettings['integratedFiles'] ?? true, 'assetVersion' => $viaSettings['assetVersion'] ?? '1.2.2'];
 $viaOptions['loginTheme'] = $viaSettings['loginTheme'] ?? 'graphite';
 $viaOptions['phpmyadminPort'] = (int) ($viaSettings['phpmyadminPort'] ?? 0);
 $viaOptions['accountPort'] = (int) ($viaSettings['accountPort'] ?? 0);
 $viaOptions['webmailPort'] = (int) ($viaSettings['webmailPort'] ?? 0);
-$viaVersion = rawurlencode((string) ($viaSettings['assetVersion'] ?? '1.2.1'));
+$viaVersion = rawurlencode((string) ($viaSettings['assetVersion'] ?? '1.2.2'));
 if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['token'])) {
     $viaAsset = !empty($_SESSION['userContext']) && !empty($_SESSION['user']) ? 'panel' : 'login';
     echo '<link rel="stylesheet" href="/css/virtualia/' . $viaAsset . '.min.css?v=' . $viaVersion . '">';

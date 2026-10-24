@@ -1,5 +1,9 @@
 # Cambios
 
+## 1.2.2
+
+- La opción actual del menú mantiene el mismo fondo uniforme del hover, sin franja celeste y con texto legible.
+
 ## 1.2.1
 
 - Menú sin fondo azul ni franja celeste de selección; hover de un solo color y página actual indicada discretamente, conservando foco de teclado.
