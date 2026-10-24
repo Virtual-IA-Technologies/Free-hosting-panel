@@ -1,5 +1,11 @@
 # Estado y continuidad — VIP
 
+## Entrega 1.3.2 — detalles de registros
+
+- Corregida la extracción de valores del detalle: normaliza espacios del HTML, excluye acciones y etiquetas móviles repetidas, separa nombre y correo y recupera los títulos de columna.
+- Presentación compacta en dos columnas, con ajuste de texto en pantallas pequeñas. Sin consultas ni dependencias nuevas.
+- Validado en sesión administrativa real: etiquetas y valores, correo separado, cuotas, escritorio y móvil de 390 px, cierre con Escape y ausencia de errores JavaScript. Dos pruebas del instalador correctas. Desplegado con respaldo; JS/CSS coinciden con los artefactos locales. Sin Node ni servicios adicionales.
+
 ## Entrega 1.3.1 — 24/10/2026
 
 - Estado del servidor y Versiones y actualizaciones visibles juntos en Panel. La pantalla nativa de Hestia explica su alcance y enlaza al gestor de software. Cabeceras legibles en temas claros.

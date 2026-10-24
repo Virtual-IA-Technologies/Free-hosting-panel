@@ -20,7 +20,7 @@ dialog.vip-sheet::backdrop{background:#02061759;backdrop-filter:blur(1px)}
 .vip-sheet-status{margin:0;padding:18px 30px;color:var(--vip-muted);font-size:13px}
 .vip-sheet-status:empty{display:none}
 .vip-sheet-fallback{margin:0 30px 20px;color:var(--vip-link)}
-.vip-record-detail{margin:0}.vip-record-detail dt{font-size:12px;color:var(--vip-muted);margin:0 0 6px}.vip-record-detail dd{margin:0 0 22px;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--vip-heading)}
+.vip-record-detail{margin:0;display:grid;gap:0}.vip-record-field{display:grid;grid-template-columns:minmax(120px,36%) minmax(0,1fr);gap:16px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--vip-border)}.vip-record-field:first-child{padding-top:0}.vip-record-field:last-child{border-bottom:0}.vip-record-detail dt{font-size:13px;color:var(--vip-muted);margin:0;line-height:1.6}.vip-record-detail dd{margin:0;white-space:normal;overflow-wrap:anywhere;color:var(--vip-heading);font-size:14px;line-height:1.6;text-align:left}
 .vip-row-trigger{min-width:32px;height:32px;border:1px solid var(--vip-border);border-radius:7px;background:var(--vip-raised);color:var(--vip-heading);font-size:23px;line-height:1;cursor:pointer}
 .vip-row-trigger:hover{background:var(--vip-hover);border-color:var(--vip-link)}
 .vip-enhanced-row .units-table-row-actions>:not(.vip-row-trigger){display:none}

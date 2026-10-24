@@ -18,7 +18,7 @@ En el servidor, con una cuenta que pueda usar `sudo`:
 ```sh
 git clone https://github.com/Virtual-IA-Technologies/Free-hosting-panel.git
 cd Free-hosting-panel
-git checkout v1.3.1
+git checkout v1.3.2
 sudo python3 scripts/install.py --dry-run --default-theme medium
 sudo python3 scripts/install.py --default-theme medium
 ```

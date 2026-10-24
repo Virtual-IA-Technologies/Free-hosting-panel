@@ -85,8 +85,19 @@
   if(sheet?.open&&!close())return;
   ensureSheet();trigger=row;closeMenu();title.textContent='Detalle del registro';description.textContent='Información visible en esta lista.';status.textContent='';fallback.hidden=true;dirty=false;resize();
   body=node('div','vip-sheet-body');const list=node('dl','vip-record-detail');
-  const cells=[...row.querySelectorAll('.units-table-cell')].filter(e=>!e.querySelector('input,button')&&!e.classList.contains('units-table-row-actions'));
-  (cells.length?cells:[row.querySelector('.units-table-heading-cell')||row]).forEach((cell,i)=>{const value=cell.textContent.trim();if(value){list.append(node('dt','',cell.dataset.label||cell.getAttribute('aria-label')||(i?'Dato '+(i+1):'Registro')),node('dd','',value));}});
+  const clean=value=>(value||'').replace(/\s+/g,' ').trim().replace(/:\s*$/,'');
+  const headers=[...row.closest('.units-table')?.querySelectorAll('.units-table-header > .units-table-cell')||[]];
+  const add=(label,value)=>{if(!value)return;const field=node('div','vip-record-field');field.append(node('dt','',label||'Registro'),node('dd','',value));list.append(field);};
+  const cells=[...row.querySelectorAll(':scope > .units-table-cell')];
+  (cells.length?cells:[row]).forEach((cell,i)=>{
+   if(cell.querySelector('input,button,.units-table-row-actions')||cell.classList.contains('units-table-row-actions'))return;
+   const copy=cell.cloneNode(true),mobileLabel=copy.querySelector('.u-hide-desktop');
+   const label=clean(cell.dataset.label||cell.getAttribute('aria-label')||mobileLabel?.textContent||headers[i]?.textContent||headers[i]?.querySelector('[title]')?.getAttribute('title'));
+   copy.querySelectorAll('.vip-account-actions,.units-table-row-actions,.u-hide-desktop,script,style,[hidden]').forEach(e=>e.remove());
+   const extra=cell.classList.contains('units-table-heading-cell')?[...copy.querySelectorAll('p')]:[];
+   extra.forEach(e=>e.remove());add(label,clean(copy.textContent));
+   extra.forEach((p,index)=>{const original=cell.querySelectorAll('p')[index];add(clean(original?.querySelector('.u-hide-desktop')?.textContent)||(p.textContent.includes('@')?'Correo electrónico':'Información adicional'),clean(p.textContent));});
+  });
   body.append(list);footer=node('footer','vip-sheet-footer');const button=node('button','button button-secondary','Cerrar');button.type='button';button.onclick=()=>close();footer.append(button);root.append(body,footer);sheet.showModal();document.body.classList.add('vip-sheet-open');setBusy(false);
  }
  document.addEventListener('click',e=>{

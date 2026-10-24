@@ -1,5 +1,9 @@
 # Cambios
 
+## 1.3.2 — 2026-10-24
+
+- Detalles de registros compactos con etiquetas de la tabla, nombre y correo separados, y valores sin espacios de indentación ni accesos concatenados. Diseño adaptable sin consultas adicionales.
+
 ## 1.3.1 — 2026-10-24
 
 - Estado del servidor y Versiones y actualizaciones juntos en Panel; acceso directo desde la pantalla nativa de actualizaciones de Hestia, explicando su alcance.
