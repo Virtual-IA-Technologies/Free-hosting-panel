@@ -1,0 +1,13 @@
+node_modules/
+test-results/
+playwright-report/
+preview/
+backups/
+deployments/
+.env*
+*.dpapi
+*.pem
+*.key
+*.log
+__pycache__/
+.DS_Store
