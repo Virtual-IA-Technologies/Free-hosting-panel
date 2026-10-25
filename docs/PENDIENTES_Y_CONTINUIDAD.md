@@ -1,5 +1,18 @@
 # Estado y continuidad — VIP
 
+## Entrega 1.3.5 — administración y respaldos
+
+- Implementados y desplegados módulos opcionales de correo/SQL y políticas de respaldo. PHP compartido mantiene los procesos externos bloqueados; tickets consumidos por un puente exclusivo de loopback al PHP nativo de Hestia.
+- Inventarios administrativos de cron, claves públicas y transferencia; operaciones de cuentas permanecen en rutas nativas. Menú compacto, ayuda contextual, métricas de servidor en texto y fechas día/mes/año según zona configurada.
+- Las políticas de respaldo permiten cuentas, contenido, conexiones existentes, horarios y retención; cola de políticas coincidentes, auditoría y retención limitada a objetos propios. Consultar [la guía y sus límites](backups.md).
+- Validado con recursos efímeros: SSO SQL desde el puerto alternativo y reapertura con/sin sesión SQL, creación de base y buzón, cambio de contraseña, SSO Roundcube, inventarios globales, zona horaria nativa, ayuda compacta y móvil. Respaldo SQL subido a un destino externo, descargado y restaurado realmente en otra base temporal; recursos de prueba eliminados.
+- Activación de respaldos es una decisión operativa: se pueden guardar políticas pausadas y configurarlas antes de habilitarlas. Conectar un destino no activa una política. No sustituir tareas del origen hasta validar el relevo. Consultar la entrega GitHub para el estado de publicación.
+- Pendientes de producto: asistente OAuth web para proveedores nuevos, restauración guiada de respaldos parciales e inventario histórico de archivos externos ajenos a esta instalación. No son funciones implementadas por mostrar una conexión existente.
+- Explorador integrado con año de cuatro dígitos y 24 horas; Roundcube aplica fecha y zona después de cargar preferencias. Utilidad opcional reversible para la zona del PHP interno, sin cambiar la zona del sistema. Comprobaciones del instalador y formato correctas.
+- Inventarios, selectores, exportación y contador de alojamiento excluyen administradores. Cabeceras ordenables con valores numéricos y selección preservada; comprobación automatizada de filtros, teclado y orden en ambos sentidos.
+- La distribución 1.3.5 incluye únicamente código y documentación genéricos. Consultar el tag y la entrega de GitHub para comprobar publicación y CI; cuentas, credenciales y configuración del despliegue permanecen fuera del repositorio.
+- La historia anterior describe el estado de cada entrega. No usar sus pendientes de migración o credenciales como inventario actual ni ejecutar limpieza de cuentas por instrucciones históricas.
+
 ## Entrega 1.3.4 — correo y bases globales
 
 - Implementados inventarios administrativos por propietario para dominios/buzones de correo y bases de datos, con búsqueda y filtro. Se consultan solo al abrir cada servicio y seleccionan campos sin contraseñas, hashes ni claves SSO.

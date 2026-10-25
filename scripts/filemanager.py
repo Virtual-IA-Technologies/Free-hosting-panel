@@ -17,6 +17,12 @@ def build_assets(root):
     app = app.replace('document.body', 'document.getElementById("vip-files")')
     app = app.replace('"../images/logo.svg"', '"/images/logo.svg"')
     app = re.sub(r'\b(?:this|[A-Za-z_$][\w$]*)\.\$store\.state\.config\.logo',lambda match:'new URL('+match.group(0)+',window.location.origin+"/fm/").href',app)
+    # Only the derived bundle changes: epoch timestamps use the panel's server
+    # timezone and four-digit, 24-hour display, independent of browser settings.
+    date_method = r'formatDate\(([A-Za-z_$][\w$]*)\)\{return [^{};]+\.unix\(\1\)\.format\([^{};]+\)\}'
+    app, dates = re.subn(date_method, lambda m: 'formatDate('+m[1]+'){return window.vipDate('+m[1]+')}', app)
+    if dates != 1:
+        raise ValueError('Version de FileGator no compatible con fechas integradas.')
     vendor = (folder/'chunk-vendors.js').read_text().replace('document.body', 'document.getElementById("vip-files")')
     notice = '/*! Derived from the installed FileGator. Native license: /fm/LICENSE; source unchanged. */\n'
     return {

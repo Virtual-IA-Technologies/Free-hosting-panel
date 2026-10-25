@@ -64,13 +64,24 @@
   }
   const shellPath=context.admin?'/list/user/':new URL(hostingGroup[1][0]?.[1]||'/list/web/',location.origin).pathname;
   if(nativeFileLink){const href=context.integratedFiles===false?nativeFileLink.getAttribute('href'):shellPath+'#archivos';groups[0][1].push(['Archivos y documentos',href,'folder-open','Explorar y gestionar los archivos de esta cuenta']);nativeFileLink.href=href;}
-  if(context.admin){const index=groups.findIndex(g=>g[0]==='Alojamiento');if(index>2)groups.splice(2,0,groups.splice(index,1)[0]);}
+  if(context.admin){
+    const panel=groups[0],serverGroup=groups.find(g=>g[0]==='Configuración del servidor'),security=groups.find(g=>g[0]==='Seguridad y registros');
+    serverGroup[0]='Servidor';
+    const serverShortcuts=panel[1].filter(item=>item[1].startsWith('/list/server/'));panel[1]=panel[1].filter(item=>!serverShortcuts.includes(item));serverGroup[1].unshift(...serverShortcuts);
+    serverGroup[1].push(['Hora y zona horaria','/edit/server/#vip-time','clock','Hora del sistema y zona horaria']);
+    security[1].unshift(['Certificados SSL','/list/web/?vip_view=ssl','lock','Certificados de todas las cuentas'],['Claves SSH','/list/user/?vip_view=keys#cuentas','key','Claves públicas autorizadas por cuenta']);
+    // Own-account views remain available in each global service toolbar.
+    hostingGroup[1]=hostingGroup[1].filter(item=>!new URL(item[1],location.origin).searchParams.has('vip_scope'));
+    const health=groups.find(g=>g[0]==='Salud del sistema'),bandwidth=health[1].find(item=>item[1]==='/list/stats/');bandwidth[0]='Ancho de banda';bandwidth[1]='/list/user/?vip_view=bandwidth#cuentas';
+    const cron=hostingGroup[1].find(item=>new URL(item[1],location.origin).pathname==='/list/cron/');if(cron)cron[1]='/list/user/?vip_view=cron#cuentas';
+    const index=groups.findIndex(g=>g[0]==='Alojamiento');if(index>2)groups.splice(2,0,groups.splice(index,1)[0]);
+  }else hostingGroup[1].push(['Claves SSH','/list/key/','key','Claves públicas de esta cuenta']);
   if (!hostingGroup[1].length && !context.admin) return;
   document.body.classList.add('via-shell');
   const sidebar = node('aside', 'via-sidebar'); sidebar.id = 'via-sidebar'; sidebar.setAttribute('aria-label', 'Administración Virtual IA');
   const brand = node('a', 'via-brand'); brand.href = context.admin ? '/list/user/#inicio' : hostingGroup[1][0][1];
   const logo = node('img'); logo.src = '/images/logo-header.svg?v=20261024-3'; logo.alt = 'Virtual IA Technologies'; brand.append(logo);
-  sidebar.append(brand, node('div', 'via-caption', context.admin ? 'VIRTUAL IA PANEL / ACCESO VIP' : 'VIRTUAL IA PANEL / ALOJAMIENTO'));
+  sidebar.append(brand);
   const search = node('input', 'via-search'); search.type = 'search'; search.placeholder = 'Buscar herramientas…'; search.setAttribute('aria-label', 'Buscar herramientas');
   sidebar.append(search);
   const nav = node('nav', 'via-nav'); const searchable = [];
@@ -78,7 +89,7 @@
     const a = node('a', 'via-link'); a.href = secureHref(item[1]); a.append(icon(item[2]), node('span', '', item[0])); return a;
   };
   groups.filter(g => g[1].length).forEach(([title, items]) => {
-    const details = node('details', 'via-group'); details.open = true;
+    const details = node('details', 'via-group'); details.open = title!=='Herramientas y Developers';
     details.append(node('summary', '', title));
     items.forEach(item => { const a = linkFor(item); details.append(a); searchable.push({item,a,details}); });
     nav.append(details);
@@ -98,8 +109,8 @@
   const files=node('section','vip-files');files.id='vip-files';files.setAttribute('aria-label','Gestor de archivos');content.append(files);
   if(!context.admin&&!context.fileAdminUser)files.append(node('p','vip-file-account-picker',`Carpeta de esta cuenta: /home/${context.user}`));
   let fileStarted=false;
-  const footer=document.querySelector('.app-footer');if(footer){footer.append(node('span','vip-product-brand',' · '+(context.appName||'VIP - Virtual IA Panel')+' v1.3.4'));}
-  if (context.admin && /^\/list\/user\/?$/.test(location.pathname)) {
+  const footer=document.querySelector('.app-footer');if(footer){footer.append(node('span','vip-product-brand',' · '+(context.appName||'VIP - Virtual IA Panel')+' v1.3.5'));}
+  if (context.admin && !context.operationsInventory && /^\/list\/user\/?$/.test(location.pathname)) {
     const hint=node('aside','vip-account-hint','Administra cada cuenta desde sus accesos directos. Para aumentar o reducir espacio, ajusta su plan en Recursos. ');
     const plans=node('a','','Administrar planes');plans.href='/list/package/';hint.append(plans);heading.after(hint);
     document.querySelectorAll('.js-unit[data-sort-name]').forEach(row=>{
@@ -186,7 +197,7 @@
     let current;
     searchable.forEach(x=>{
       const active=x===selected;
-      x.a.classList.toggle('via-active',active);if(active){x.a.setAttribute('aria-current','page');current=x.item;}else x.a.removeAttribute('aria-current');
+      x.a.classList.toggle('via-active',active);if(active){x.a.setAttribute('aria-current','page');x.a.closest('details').open=true;current=x.item;}else x.a.removeAttribute('aria-current');
     });
     title.textContent=isFiles?'Archivos y documentos':home?'Inicio del servidor':current?.[0] || (location.pathname.startsWith('/edit/')?'Configuración':'Administración');
     sub.textContent=home ? `Gestiona tus cuentas, servicios y recursos · ${context.server?.host || ''}` : 'Inicio / '+title.textContent;

@@ -1,5 +1,19 @@
 # Cambios
 
+## 1.3.5 — 2026-10-24
+
+- Respaldos opcionales por cuentas/contenido, destino local o Rclone, múltiples horarios y retención configurable; inventario, descarga, auditoría y cola sin servicio residente nuevo.
+- Menú y acciones compactos, ayuda contextual, inventarios globales de cron/claves SSH/tráfico y acceso a SSL por propietario.
+- Fechas visibles día/mes/año con la zona horaria real del servidor; reloj administrativo y programación por zona sin depender de la configuración del navegador.
+- SSO SQL compatible con el puerto alternativo del panel y reapertura; Roundcube completa la sesión nativa sin cambiar claves de buzones.
+- Accesos globales a phpMyAdmin y usuarios/permisos SQL mediante tickets de un uso; cuentas normales aisladas.
+- Módulo opcional para bandejas, cola, seguimiento, rebotes y relayers; confirmación y respaldo privado antes de borrar mensajes de cola.
+- Listado de cuentas con dominio, IP, cuota, disco, tráfico, estado y filtros; recálculo manual de baja prioridad.
+- Administradores excluidos de inventarios y selectores de alojamiento, CSV y contador de cuentas. Cabeceras con orden ascendente/descendente y comparación numérica para cuotas y consumo, conservando la selección nativa.
+- Eliminada la leyenda redundante de acceso VIP. Fechas del explorador y Roundcube en día/mes/año y 24 horas; utilidad opcional y reversible para alinear la zona del PHP interno del panel con la del servidor.
+- Barra administrativa con carga, RAM y disco libre; sin sondeos ni procesos residentes nuevos.
+- Vista rápida limitada para correo suspendido; lectura protegida contra enlaces simbólicos y rutas externas.
+
 ## 1.3.4 — 2026-10-24
 
 - Correo y bases de datos de todas las cuentas en la vista administrativa, con propietario, búsqueda y filtros. Las cuentas normales y las sesiones suplantadas mantienen su ámbito.

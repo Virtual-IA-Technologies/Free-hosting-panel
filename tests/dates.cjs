@@ -1,0 +1,3 @@
+const assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
+const context={window:{},document:{getElementById:()=>({textContent:JSON.stringify({serverTime:{timezone:'America/Lima'}})})},Intl,Date};vm.createContext(context);vm.runInContext(fs.readFileSync('src/js/dates.js','utf8'),context);
+assert.equal(context.window.vipDate('2026-10-24'),'24/10/2026');assert.equal(context.window.vipDate('2026-10-24 20:30:00'),'24/10/2026 20:30:00');assert.equal(context.window.vipDate(Date.UTC(2026,9,25,1,30)/1000),'24/10/2026, 20:30:00');assert.equal(context.window.vipDate('raw technical log'),'raw technical log');console.log('PASS day/month/year and server timezone independent of browser locale');

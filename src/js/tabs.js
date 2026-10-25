@@ -3,7 +3,7 @@
  'use strict';
  const advancedRoutes=new Set(['/edit/web/','/edit/user/','/add/db/','/add/dns/','/add/mail-account/']);
  const routes=new Set(['/edit/server/','/edit/server/whitelabel/','/add/package/','/edit/package/',...advancedRoutes]);
- const aliases={'#vip-php':'#v_php_default_version,#v_backend_template,#v_phpcli','#vip-backups':'#v_backup','#vip-retention':'#v_backup_incremental','#vip-mail':'#v_webmail_alias,[name="v_mail"]','#vip-security':'#v_api_system'};
+ const aliases={'#vip-time':'#v_timezone','#vip-php':'#v_php_default_version,#v_backend_template,#v_phpcli','#vip-backups':'#v_backup','#vip-retention':'#v_backup_incremental','#vip-mail':'#v_webmail_alias,[name="v_mail"]','#vip-security':'#v_api_system'};
  let sequence=0;
  const reveal=field=>{
   const panels=[];

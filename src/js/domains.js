@@ -2,17 +2,17 @@
 (() => {
  'use strict';
  const contextNode=document.getElementById('via-context');if(!contextNode)return;
- const context=JSON.parse(contextNode.textContent),inventory=context.domainsInventory;
+ const context=JSON.parse(contextNode.textContent),inventory=context.domainsInventory,isSsl=new URLSearchParams(location.search).get('vip_view')==='ssl';
  if(!context.admin||!inventory||!/^\/list\/web\/?$/.test(location.pathname))return;
  const content=document.querySelector('.app-content');if(!content)return;
  const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
  const section=node('section','vip-domains-inventory');section.id='vip-domains-inventory';section.setAttribute('aria-label','Dominios de todas las cuentas');
  if(!inventory.available||inventory.failedAccounts){const warning=node('p','vip-account-hint','No se pudo completar el inventario de todas las cuentas. Recarga la página o entra en cada cuenta desde Enumerar las cuentas.');warning.setAttribute('role','alert');content.prepend(warning);return;}
  const switchTo=(owner,path)=>{if(owner===context.user)return path==='/list/web/'?'/list/web/?vip_scope=account':path;const url=new URL('/login/',location.origin);url.searchParams.set('loginas',owner);url.searchParams.set('edit_link',path);url.searchParams.set('token',context.csrfToken||'');return url.pathname+url.search;};
- const header=node('div','vip-domains-header');header.append(node('h2','','Dominios de todas las cuentas'),node('p','','Cada sitio muestra su propietario. Administrar y Archivos abren la cuenta correspondiente.'));
+ const header=node('div','vip-domains-header');header.append(node('span','vip-scope-label','Todas las cuentas'));
  const toolbar=node('div','vip-domains-filters'),search=node('input'),owners=node('select');search.type='search';search.placeholder='Buscar dominio o cuenta…';search.setAttribute('aria-label','Buscar dominio o cuenta');owners.setAttribute('aria-label','Filtrar por propietario');
  const option=node('option','','Todas las cuentas');option.value='';owners.append(option);
- [...new Set(inventory.rows.map(row=>row.owner))].sort().forEach(owner=>{const option=node('option','',owner);option.value=owner;owners.append(option);});toolbar.append(search,owners);
+ [...new Set(inventory.rows.map(row=>row.owner))].sort().forEach(owner=>{const option=node('option','',owner);option.value=owner;owners.append(option);});toolbar.append(search,owners);const own=node('a','','Mi cuenta');own.href='/list/web/?vip_scope=account';toolbar.append(own);
  const wrapper=node('div','vip-domains-table-wrap'),table=node('table','vip-domains-table'),thead=node('thead'),tr=node('tr');
  ['Dominio','Propietario / cuenta','Dirección IP','Disco','SSL','Acciones'].forEach(label=>{const th=node('th','',label);th.scope='col';tr.append(th);});thead.append(tr);table.append(thead);
  const tbody=node('tbody'),rows=[];
@@ -22,7 +22,8 @@
   if(item.suspended)domain.append(node('small','','Suspendido'));
   const owner=node('td');owner.append(node('strong','',item.owner));if(item.ownerName!==item.owner)owner.append(node('small','',item.ownerName));
   const actions=node('td','vip-domains-actions');
-  for(const [label,path] of [['Administrar','/list/web/'],['Archivos','/fm/']]){const link=node('a','',label);link.href=switchTo(item.owner,path==='/fm/'?'/list/web/':path);if(path==='/fm/')link.dataset.vipFilesOwner=item.owner;link.setAttribute('aria-label',label+' · '+item.domain+' · '+item.owner);actions.append(link);}
+  const ssl=node('a','','SSL / HTTPS');const sslQuery=new URLSearchParams({domain:item.domain,token:context.csrfToken});ssl.href=switchTo(item.owner,'/edit/web/?'+sslQuery+'#vip-ssl');ssl.setAttribute('aria-label','SSL / HTTPS · '+item.domain);actions.append(ssl);
+  if(!isSsl)for(const [label,path] of [['Administrar','/list/web/'],['Archivos','/fm/']]){const link=node('a','',label);link.href=switchTo(item.owner,path==='/fm/'?'/list/web/':path);if(path==='/fm/')link.dataset.vipFilesOwner=item.owner;link.setAttribute('aria-label',label+' · '+item.domain+' · '+item.owner);actions.append(link);}
   const preview=context.previewRoutes?.[item.domain];if(preview&&/^https?:\/\//.test(preview)){const link=node('a','','Probar por IP');link.href=preview;link.target='_blank';link.rel='noopener';link.setAttribute('aria-label','Probar por IP '+item.domain);actions.prepend(link);}
   row.append(domain,owner,node('td','',item.ip),node('td','',(item.disk||'0')+' MB'),node('td','',item.ssl?'Activo':'Pendiente'),actions);tbody.append(row);
   rows.push({row,owner:item.owner,search:(item.domain+' '+item.aliases+' '+item.owner+' '+item.ownerName).toLocaleLowerCase()});

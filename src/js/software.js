@@ -7,7 +7,7 @@
  const button=(label,action)=>{const b=node('button',label,'button button-secondary');b.type='button';b.onclick=action;return b;};
  const link=(label,url)=>{const a=node('a',label);a.href=url;return a;};
  const hub=node('section',undefined,'vip-software');hub.id='vip-software';hub.hidden=true;
- hub.append(node('h1','Versiones y actualizaciones'),node('p','El gestor usa los repositorios configurados. Una versión base antigua puede recibir correcciones del distribuidor; compararla con upstream no demuestra una vulnerabilidad.'));
+ const help=node('div');help.append(node('p','El gestor usa los repositorios configurados. Una versión base antigua puede recibir correcciones del distribuidor; compararla con upstream no demuestra una vulnerabilidad.'),node('p','Actualizar índices consulta los repositorios. Cambiar de rama requiere revisión independiente. Los módulos PHP afectan a FPM y CLI de esa rama y a todas sus cuentas; las extensiones esenciales están protegidas.'));window.vipHelp?.add('Versiones y extensiones',help);
  const status=node('p');status.setAttribute('role','status');const actions=node('div',undefined,'vip-software-actions');
  const reload=button('Consultar estado',()=>refresh()),indexes=button('Planificar actualización de índices',()=>preview({kind:'refresh'}));actions.append(reload,indexes);
  const native=node('p');native.append(link('Actualizaciones nativas','/list/updates/'),' · ',link('Configuración y PHP','/edit/server/#vip-php'));hub.append(actions,status,native);
@@ -38,7 +38,7 @@
  function operation(label,op){const b=button(label,()=>preview(op));b.dataset.vipOperation='true';return b;}
  function render(){
   panels.forEach(p=>p.replaceChildren());
-  panels[0].append(node('p','Candidatas según la caché APT local. Planificar índices consulta los repositorios. Los cambios de rama de servicios requieren revisión independiente.'));
+  // Explanations live in contextual help; plans keep their operational warnings.
   for(const component of data.components){
    const card=node('section',undefined,'vip-software-card');card.append(node('h2',component.label));
    if(!component.packages.length)card.append(node('p','Estado desconocido: no se detectó un paquete permitido. Puede no estar instalado o gestionarse fuera de APT.'));
@@ -57,7 +57,6 @@
    if(php.policy)card.append(node('p','Soporte activo hasta '+php.policy.activeEnd+'; seguridad hasta '+php.policy.securityEnd+'.'));
    if(!php.installed){if(php.candidate&&['active','security'].includes(php.support))card.append(operation('Preparar instalación en paralelo',{kind:'php_install',version:php.version}));}
    else{
-    card.append(node('p','Los cambios de módulos afectan a FPM y CLI de esta rama y a todas sus cuentas. Las extensiones esenciales de servicios compartidos están protegidas. Los ajustes de php.ini por cuenta requieren las capacidades nativas.'));
     const changes={};const rows=php.extensions.map(ext=>{
      const label=node('label'),input=node('input');input.type='checkbox';input.checked=ext.enabledFpm&&ext.enabledCli;input.indeterminate=ext.enabledFpm!==ext.enabledCli;
      input.disabled=(ext.protected&&ext.enabledFpm&&ext.enabledCli)||(!ext.installed&&!ext.candidate);input.setAttribute('aria-label',ext.name+' PHP '+php.version);input.onchange=()=>{changes[ext.name]=input.checked;if(ext.protected&&input.checked)input.disabled=true;};label.append(input,' '+(ext.protected?'Protegida':'Habilitar en FPM y CLI'));
@@ -68,7 +67,7 @@
    }
    panels[1].append(card);
   }
-  panels[2].append(node('p','Últimas 15 operaciones. Los registros y respaldos completos se conservan en el almacenamiento privado del servidor.'));
+  panels[2].append(node('small','Últimas 15 operaciones'));
   for(const item of data.history){const row=node('p',item.started+' · '+item.title+' · '+item.state+' · '+item.actor+' ');row.append(button('Ver resultado',()=>showJob(item.id)));panels[2].append(row);}
   if(!data.history.length)panels[2].append(node('p','Sin operaciones registradas.'));
   availability();
@@ -83,7 +82,7 @@
   if(pending||activeJob||!data)return;pending=true;availability();plan=null;planBox.replaceChildren();planBox.removeAttribute('role');planBox.hidden=false;planBox.append(node('p','Preparando plan…'));
   try{
    plan=await request('plan',{operation:JSON.stringify(op)});planBox.replaceChildren(node('h2',plan.title));
-   planBox.append(node('p','Plan válido hasta '+new Date(plan.expires*1000).toLocaleString()+'. Puede reiniciar servicios; no cambia DNS ni migra proyectos.'));
+   planBox.append(node('p','Plan válido hasta '+(window.vipDate?.(plan.expires)||new Intl.DateTimeFormat('en-GB').format(new Date(plan.expires*1000)))+'. Puede reiniciar servicios; no cambia DNS ni migra proyectos.'));
    plan.warnings.forEach(w=>planBox.append(node('p',w)));
    if(plan.databaseBackup)planBox.append(node('p','Respaldo SQL completo con bloqueo de tablas antes de instalar. Reserva espacio y una ventana de mantenimiento.'));
    planBox.append(table(['Paquete','Actual','Propuesta'],plan.changes.map(p=>[p.package,p.from||'No instalado',p.to])));
@@ -119,7 +118,7 @@
  function route(){
   clearTimeout(timer);const show=location.hash==='#vip-software';hub.hidden=!show;
   if(show){
-   if(!disabledNative.length)[...content.children].filter(e=>e!==hub&&!e.matches('script,style')).forEach(e=>{disabledNative.push([e,e.hidden]);e.classList.add('vip-software-native-hidden');});
+   if(!disabledNative.length)[...content.children].filter(e=>e!==hub&&!e.matches('script,style,.via-page-heading,.vip-server-shortcuts')).forEach(e=>{disabledNative.push([e,e.hidden]);e.classList.add('vip-software-native-hidden');});
    refresh();
   }else{disabledNative.forEach(([e])=>e.classList.remove('vip-software-native-hidden'));disabledNative=[];}
  }

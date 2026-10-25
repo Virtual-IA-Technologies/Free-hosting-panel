@@ -21,7 +21,7 @@ class InstallerTest(unittest.TestCase):
             root = Path(directory)
             js = root/'web/fm/dist/js'
             js.mkdir(parents=True)
-            app = 'mode:"hash";x.$mount("#app");window.location.origin+window.location.pathname+"?r=";document.body;src:e.$store.state.config.logo;'
+            app = 'mode:"hash";x.$mount("#app");window.location.origin+window.location.pathname+"?r=";document.body;src:e.$store.state.config.logo;formatDate(e){return ia.a.unix(e).format(go.state.config.date_format?go.state.config.date_format:"YY/MM/DD hh:mm:ss")}'
             (js/'app.js').write_text(app)
             (js/'chunk-vendors.js').write_text('document.body;')
             loader = root/'web/templates/includes/js.php'
@@ -32,6 +32,7 @@ class InstallerTest(unittest.TestCase):
             self.assertEqual(len(assets), 2)
             self.assertIn(b'mode:"abstract"', assets['web/js/virtualia/filegator-app.js'])
             self.assertIn(b'/fm/?r=', assets['web/js/virtualia/filegator-app.js'])
+            self.assertIn(b'formatDate(e){return window.vipDate(e)}', assets['web/js/virtualia/filegator-app.js'])
             self.assertIn(b'new URL(e.$store.state.config.logo,window.location.origin+"/fm/").href',assets['web/js/virtualia/filegator-app.js'])
             self.assertEqual((js/'app.js').read_text(), app)
             before = sorted(p.relative_to(root) for p in root.rglob('*'))

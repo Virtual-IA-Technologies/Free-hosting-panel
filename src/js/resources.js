@@ -4,12 +4,19 @@
   const context=JSON.parse(el.textContent);if(!context.admin)return;
   const s=context.server||{},content=document.querySelector('.app-content');
   const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
+  const quick=context.serverQuick,usage=document.querySelector('.top-bar-usage')||document.querySelector('.top-bar-usage-item')?.parentElement;
+  if(quick&&usage){
+    usage.querySelectorAll('.top-bar-usage-item:not(:first-child)').forEach(item=>item.remove());
+    const used=quick.memoryTotal?Math.round((quick.memoryTotal-quick.memoryAvailable)/quick.memoryTotal*100):0;
+    const values=[['Carga '+Number(quick.load?.[0]||0).toFixed(2),'Carga media del último minuto','cpu'],['RAM '+used+' %','Memoria del servidor utilizada','mem'],['Disco '+(quick.diskFree/1073741824).toFixed(1)+' GB libres','Espacio disponible de '+(quick.diskTotal/1073741824).toFixed(1)+' GB en el servidor','disk']];
+    for(const [text,title,view] of values){const item=node('a','top-bar-usage-item vip-server-usage',text);item.href='/list/server/?'+view;item.title=title;usage.append(item);}
+  }
   if(content && ['/list/server/','/list/updates/'].includes(location.pathname)){
     const shortcuts=node('aside','vip-server-shortcuts');
-    shortcuts.append(node('p','',location.pathname==='/list/updates/'?'Esta pantalla muestra solo las actualizaciones internas de Hestia. Para PHP, extensiones, bases de datos y correo, abre Versiones y actualizaciones.':'Consulta versiones, administra PHP y extensiones o reinicia únicamente el servicio que necesitas.'));
+    shortcuts.title='Servicios instalados, versiones y actualizaciones del panel';
     const nav=node('nav');nav.setAttribute('aria-label','Administración del servidor');
     for(const [label,href] of [['Servicios y reinicio','/list/server/'],['Versiones y actualizaciones','/list/server/#vip-software'],['Actualizaciones de Hestia','/list/updates/']]){
-      const a=node('a','button button-secondary',label);a.href=href;nav.append(a);
+      const a=node('a','button button-secondary',label);a.href=href;const target=new URL(href,location.origin);if(target.pathname===location.pathname&&target.hash===location.hash)a.setAttribute('aria-current','page');nav.append(a);
     }
     shortcuts.append(nav);content.querySelector('.via-page-heading')?.after(shortcuts);
   }

@@ -4,7 +4,7 @@ VIP es una extensión de presentación para una instalación existente de Hestia
 
 ## 1. Preparar Hestia
 
-1. Instala Hestia mediante su [guía oficial](https://hestiacp.com/docs/introduction/getting-started). Define tu propio hostname, IP y administrador. Puedes elegir `vipadmin`; VIP no impone ese nombre.
+1. Instala Hestia mediante su [guía oficial](https://hestiacp.com/docs/introduction/getting-started). Define tu propio hostname, IP y administrador. VIP no impone un nombre de administrador.
 2. Conserva las credenciales generadas y las llaves SSH en un gestor de secretos. Cada servidor necesita credenciales distintas; este repositorio no trae contraseñas ni llaves compartidas.
 3. Comprueba que puedes iniciar sesión en Hestia y conserva una sesión SSH de recuperación. Habilita HTTPS con un certificado válido para tu hostname siguiendo la [documentación SSL](https://hestiacp.com/docs/server-administration/ssl-certificates).
 4. Si deseas archivos integrados, instala el gestor de archivos nativo de Hestia. VIP verifica su compatibilidad antes de aplicar cambios.
@@ -20,7 +20,7 @@ En el servidor, con una cuenta que pueda usar `sudo`:
 ```sh
 git clone https://github.com/Virtual-IA-Technologies/Free-hosting-panel.git
 cd Free-hosting-panel
-git checkout v1.3.4
+git checkout v1.3.5
 sudo python3 scripts/install.py --dry-run --default-theme medium
 sudo python3 scripts/install.py --default-theme medium
 ```
@@ -86,6 +86,17 @@ Como administrador, abre **Panel → Estado del servidor** y usa **Reiniciar** e
 
 Para mantener una instalación ligera, basta el instalador visual: usa recursos estáticos compilados y no añade un proceso residente. El gestor de paquetes y el tema webmail son opcionales e independientes. Node solo se utiliza en desarrollo o CI, fuera del VPS.
 
+## Zona horaria y fechas
+
+El panel, el explorador integrado y el tema webmail presentan fechas d?a/mes/a?o y hora de 24 horas seg?n la zona configurada del servidor. No se fija una zona regional en la plantilla ni se reescriben datos, formularios o registros t?cnicos. Selecciona primero tu zona en Opciones del servidor. Si el PHP interno de Hestia mantiene otra zona, alin?alo expl?citamente:
+
+```sh
+sudo python3 scripts/panel-timezone.py --dry-run
+sudo python3 scripts/panel-timezone.py
+```
+
+Tambi?n admite `--timezone America/Lima` para una elecci?n expresa. Solo modifica el php.ini interno del panel y recarga su proceso FPM de forma gradual; conserva un respaldo privado y no reinicia bases de datos ni PHP de sitios. Para revertir utiliza `--restore /opt/virtual-ia-panel/timezone-backups/FECHA`. La zona del sistema se administra mediante Hestia; esta herramienta no la cambia. Para reflejar estas fechas en Roundcube instala o actualiza tambi?n su tema opcional.
+
 ## 3. Validar y empezar
 
 - Entra por `https://TU_HOSTNAME:8083/`. Comprueba acceso administrativo y acceso de una cuenta normal.
@@ -111,6 +122,8 @@ sudo python3 scripts/uninstall.py /opt/virtual-ia-panel/backups/FECHA
 Esto revierte los archivos y preferencias registrados de esa instalación. No restaura datos de clientes ni sustituye un respaldo completo. Los respaldos del instalador pueden contener configuración anterior del servidor: consérvalos privados y fuera del repositorio.
 
 ## Desarrollar y verificar
+
+Para políticas de respaldo por cuenta, contenido, horario, destino y retención, instalar por separado `python3 scripts/install-backup-admin.py`. Consultar [Respaldos](backups.md) antes de conectar un destino o activar retención. La instalación no incluye autorizaciones OAuth, políticas de clientes ni tareas del servidor de origen.
 
 Con Node 22 o posterior y Python 3.10 o posterior:
 

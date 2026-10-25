@@ -52,6 +52,7 @@
  }
  if(!context.admin)return;
  const sections={
+  '#vip-time':['#v_timezone','La zona horaria afecta al servidor y a la programación de cron. Revisa sus horarios antes de guardar.'],
   '#vip-php':['#v_php_default_version','PHP del servidor: instala o retira versiones y elige la predeterminada. Para cambiar un sitio, entra en su cuenta → Dominios web → Editar → Opciones avanzadas → PHP / Backend. Cada dominio conserva su selección.'],
   '#vip-backups':['#v_backup','Respaldos completos: destino, compresión y ruta. La cantidad local se modifica en el plan de cada cuenta. Google Drive y OneDrive requieren primero autorizar un remoto de Rclone en el servidor.'],
   '#vip-retention':['#v_backup_incremental','Respaldos incrementales: repositorio y retención editables. La propuesta es 7 diarias, 4 semanales y 3 mensuales; aplícala después de conectar y probar el destino. La retención no programa horarios.'],
@@ -72,6 +73,7 @@
  };
  if(location.pathname==='/edit/server/php/'){
   const warning=make('aside','Editor PHP global compartido: Hestia aplica este archivo a las versiones de PHP del servidor. Para una configuración independiente usa el php.ini de la versión o el pool del dominio mediante administración SSH. Este editor no es específico de una cuenta.','vip-account-hint');
+  warning.setAttribute('role','alert');
   document.querySelector('.via-page-heading')?.after(warning);
  }
  const content=document.querySelector('.app-content');

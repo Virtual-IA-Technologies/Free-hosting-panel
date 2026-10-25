@@ -19,3 +19,5 @@ La prueba no cambia datos de clientes ni reglas de red. Comprueba login, contras
 Validación de una versión: `npm run build`, `npm run check`, `npm run test:installer`; después instalar en el servidor de revisión con respaldo y ejecutar `npm run test:ui` y `npm run test:files`. Estas pruebas no certifican envío de correo, restauración de respaldos, resolución DNS externa ni operaciones con datos reales; esos servicios se verifican al configurar cada servidor.
 
 `npm run test:interactions`: laterales, gestos, cancelación y móvil. Intercepta los POST de prueba en el navegador; no crea ni modifica recursos reales. `npm run test:refresh` comprueba también el arranque con JavaScript retrasado y la recuperación nativa si falla el recurso.
+
+`node tests/accounts.cjs` usa filas simuladas sin servidor: exclusión de administradores, contador y filtros, orden numérico ascendente/descendente, teclado y conservación de casillas. Requiere Chrome/Chromium; `VIP_BROWSER_EXECUTABLE` permite indicar su ejecutable.

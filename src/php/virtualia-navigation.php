@@ -24,19 +24,28 @@ $viaAdmin = $_SESSION['userContext'] === 'admin' && empty($_SESSION['look']);
 echo '<script>window.vipBootTimer=setTimeout(function(){document.body.classList.add("vip-native-fallback")},8000);</script>';
 $viaEffectiveUser = $_SESSION['userContext'] === 'admin' && !empty($_SESSION['look']) ? $_SESSION['look'] : $_SESSION['user'];
 $viaContext = ['admin' => $viaAdmin, 'user' => (string) $viaEffectiveUser, 'csrfToken' => (string) ($_SESSION['token'] ?? '')] + $viaOptions;
+$viaContext['serverTime']=['epoch'=>time(),'timezone'=>trim(@file_get_contents('/etc/timezone')?:'UTC')];
 $viaContext['rootFiles'] = $viaAdmin && is_file('/usr/local/lib/virtualia-root-files/enabled');
 $viaContext['folderSizes'] = is_file('/usr/local/lib/virtualia-root-files/enabled');
 if ($viaAdmin) {
     $viaPreviews = json_decode(@file_get_contents('/usr/local/lib/virtualia-preview/routes.json') ?: '{}', true);
     $viaContext['previewRoutes'] = is_array($viaPreviews) ? $viaPreviews : [];
+    $viaQuickMem=[];
+    foreach (@file('/proc/meminfo',FILE_IGNORE_NEW_LINES) ?: [] as $line) if(preg_match('/^(MemTotal|MemAvailable):\s+(\d+)/',$line,$match))$viaQuickMem[$match[1]]=(int)$match[2];
+    $viaContext['serverQuick']=['load'=>sys_getloadavg()?:[],'memoryTotal'=>$viaQuickMem['MemTotal']??0,
+        'memoryAvailable'=>$viaQuickMem['MemAvailable']??0,'diskTotal'=>@disk_total_space('/')?:0,'diskFree'=>@disk_free_space('/')?:0];
+    $viaContext['mailAdmin']=is_file('/usr/local/lib/virtualia-mail-admin/enabled');
+    $viaContext['sqlAdmin']=is_file('/usr/local/lib/virtualia-mail-admin/sql-enabled');
 }
 $viaContext['phpmyadminAlias'] = (string) ($_SESSION['DB_PMA_ALIAS'] ?? 'phpmyadmin');
 $viaPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
-if ($_SESSION['userContext'] === 'admin' && defined('HESTIA_CMD') && in_array(rtrim((string) $viaPath, '/'), ['/list/user', '/list/web', '/list/mail', '/list/db'], true)) {
+if ($viaAdmin && defined('HESTIA_CMD') && in_array(rtrim((string) $viaPath, '/'), ['/list/user', '/list/web', '/list/mail', '/list/db', '/list/cron', '/list/key', '/list/stats'], true)) {
     $viaFileUsersOutput = [];
     exec(HESTIA_CMD . 'v-list-users json', $viaFileUsersOutput, $viaFileUsersStatus);
     $viaFileUsers = $viaFileUsersStatus === 0 ? json_decode(implode("\n", $viaFileUsersOutput), true) : null;
     if (is_array($viaFileUsers)) {
+        // Hosting inventories exclude system administrators; authentication is unchanged.
+        $viaFileUsers = array_filter($viaFileUsers, static fn($info) => ($info['ROLE'] ?? '') !== 'admin');
         $viaContext['fileAdminUser'] = (string) $_SESSION['user'];
         $viaContext['fileAccounts'] = [];
         foreach ($viaFileUsers as $viaFileUser => $viaFileInfo) {
@@ -44,6 +53,50 @@ if ($_SESSION['userContext'] === 'admin' && defined('HESTIA_CMD') && in_array(rt
                 $viaContext['fileAccounts'][] = ['user' => (string) $viaFileUser, 'name' => (string) ($viaFileInfo['NAME'] ?? $viaFileUser)];
             }
         }
+    }
+}
+// Safe administration shell: no dependency on an administrator's own cron/key files.
+$viaOperationView=rtrim((string)$viaPath,'/')==='/list/user'&&in_array($_GET['vip_view']??'',['cron','keys','bandwidth'],true)?$_GET['vip_view']:null;
+if ($viaAdmin && defined('HESTIA_CMD') && ($viaOperationView||in_array(rtrim((string)$viaPath,'/'),['/list/cron','/list/key','/list/stats'],true)) && ($_GET['vip_scope']??'')!=='account') {
+    $viaKind=$viaOperationView??['/list/cron'=>'cron','/list/key'=>'keys','/list/stats'=>'bandwidth'][rtrim((string)$viaPath,'/')];
+    $viaOps=['kind'=>$viaKind,'rows'=>[],'available'=>is_array($viaFileUsers??null),'failedAccounts'=>0];
+    foreach (($viaFileUsers??[]) as $viaOwner=>$viaInfo) {
+        if (!preg_match('/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,31}$/D',(string)$viaOwner)) continue;
+        if ($viaKind==='bandwidth') {
+            $viaOps['rows'][]=['owner'=>(string)$viaOwner,'used'=>(string)($viaInfo['U_BANDWIDTH']??'0'),'limit'=>(string)($viaInfo['BANDWIDTH']??'unlimited'),'suspended'=>($viaInfo['SUSPENDED']??'')==='yes'];
+            continue;
+        }
+        $output=[];$status=1;
+        if ($viaKind==='keys'&&!empty($viaContext['mailAdmin'])) {
+            exec(HESTIA_CMD.'v-vip-mail-admin list-keys '.escapeshellarg((string)$_SESSION['user']).' '.escapeshellarg((string)$viaOwner),$output,$status);
+            $value=json_decode(implode("\n",$output),true);$output=[json_encode($value['data']??null)];if(empty($value['ok']))$status=1;
+        } else exec(HESTIA_CMD.($viaKind==='cron'?'v-list-cron-jobs':'v-list-user-ssh-key').' '.escapeshellarg((string)$viaOwner).' json',$output,$status);
+        $raw=implode("\n",$output);$records=trim($raw)===''&&$status===0?[]:json_decode($raw,true);
+        if ($status!==0||!is_array($records)) {$viaOps['failedAccounts']++;continue;}
+        foreach ($records as $id=>$record) {
+            if ($viaKind==='keys' && ($record['ID']??'')==='filemanager.ssh.key') continue;
+            $row=['owner'=>(string)$viaOwner,'id'=>(string)($viaKind==='cron'?($record['JOB']??$id):$id)];
+            if ($viaKind==='cron') $row+=['schedule'=>implode(' ',array_map(static fn($name)=>(string)($record[$name]??'*'),['MIN','HOUR','DAY','MONTH','WDAY'])),'command'=>(string)($record['CMD']??''),'suspended'=>($record['SUSPENDED']??'')==='yes'];
+            else $row+=['name'=>(string)($record['ID']??$id),'fingerprint'=>(string)($record['KEY']??'')];
+            $viaOps['rows'][]=$row;
+        }
+    }
+    $viaContext['operationsInventory']=$viaOps;
+}
+if ($viaAdmin && !$viaOperationView && rtrim((string)$viaPath, '/') === '/list/user' && is_array($viaFileUsers ?? null)) {
+    $viaContext['accountsInventory']=[];
+    foreach ($viaFileUsers as $viaOwner=>$viaOwnerInfo) {
+        if (($viaOwnerInfo['ROLE'] ?? '') === 'admin') continue;
+        if (!preg_match('/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,31}$/D',(string)$viaOwner)) continue;
+        $output=[];$status=1;exec(HESTIA_CMD.'v-list-web-domains '.escapeshellarg((string)$viaOwner).' json',$output,$status);
+        $web=$status===0?json_decode(implode("\n",$output),true):[];$domains=[];$ips=[];
+        foreach ((is_array($web)?$web:[]) as $domain=>$info) { $domains[]=(string)$domain;if(!empty($info['IP']))$ips[]=(string)$info['IP']; }
+        usort($domains,static function($a,$b){return substr_count($a,'.')<=>substr_count($b,'.') ?: strcmp($a,$b);});
+        $viaContext['accountsInventory'][]=['user'=>(string)$viaOwner,'contact'=>(string)($viaOwnerInfo['CONTACT']??''),
+            'created'=>(string)($viaOwnerInfo['DATE']??''),'quota'=>(string)($viaOwnerInfo['DISK_QUOTA']??''),
+            'disk'=>(string)($viaOwnerInfo['U_DISK']??'0'),'traffic'=>(string)($viaOwnerInfo['U_BANDWIDTH']??'0'),
+            'plan'=>(string)($viaOwnerInfo['PACKAGE']??''),'suspended'=>($viaOwnerInfo['SUSPENDED']??'')==='yes',
+            'domains'=>$domains,'ips'=>array_values(array_unique($ips))];
     }
 }
 // Inventory is read only, administrator-only and queried only on the web list.

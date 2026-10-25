@@ -34,7 +34,7 @@
     for(const [name,value,pathname] of [['Acceso de cuentas',context.accountPort,'/login/'],['phpMyAdmin',port,path],['Webmail',context.webmailPort,'/']]){
       if(!valid(value))continue;
       const url=new URL(location.origin);url.protocol='https:';url.port=String(value);url.pathname=pathname;
-      const anchor=document.createElement('a');anchor.className='via-link';anchor.href=url.href;anchor.target='_blank';anchor.rel='noopener';anchor.textContent=name+' · '+value;group.append(anchor);
+      const anchor=document.createElement('a');anchor.className='via-link';anchor.href=url.href;anchor.target='_blank';anchor.rel='noopener';anchor.textContent=name+' · '+value;if(name==='phpMyAdmin'&&context.admin&&context.sqlAdmin)anchor.dataset.vipSqlAdmin='true';group.append(anchor);
     }
     if(group.children.length>1)nav.append(group);
   }

@@ -21,6 +21,7 @@ MAPPING = {
     'dist/panel.min.css': 'web/css/virtualia/panel.min.css',
     'dist/login.min.css': 'web/css/virtualia/login.min.css',
     'dist/panel.min.js': 'web/js/virtualia/panel.min.js',
+    'dist/backups.min.js': 'web/js/virtualia/backups.min.js',
     'dist/software.min.js': 'web/js/virtualia/software.min.js',
     'dist/files.min.js': 'web/js/virtualia/files.min.js',
     'dist/login.min.js': 'web/js/virtualia/login.min.js',

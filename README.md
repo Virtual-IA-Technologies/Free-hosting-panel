@@ -4,11 +4,14 @@ Panel de administración con identidad Virtual IA, construido como una extensió
 
 Login grafito con usuario y contraseña juntos, recuperación nativa y [servicios por puertos independientes](docs/service-access.md). Los servicios adicionales son opcionales y se provisionan expresamente; instalar el tema no abre puertos ni crea cuentas.
 
-La versión 1.3.4 incorpora [pestañas de configuración](docs/configuration-tabs.md) y un [gestor administrativo opcional](docs/software-manager.md) para versiones, PHP y extensiones. El gestor tiene instalación separada y conserva autenticación, roles y CSRF nativos. Su estado de validación y publicación figura en [continuidad](docs/PENDIENTES_Y_CONTINUIDAD.md).
+La versión 1.3.5 incorpora [pestañas de configuración](docs/configuration-tabs.md) y un [gestor administrativo opcional](docs/software-manager.md) para versiones, PHP y extensiones. El gestor tiene instalación separada y conserva autenticación, roles y CSRF nativos. Su estado de validación y publicación figura en [continuidad](docs/PENDIENTES_Y_CONTINUIDAD.md).
 
 ## Instalación
 
+La [administración opcional de correo y SQL](docs/mail-and-sql-admin.md) añade acceso global a phpMyAdmin, usuarios y permisos, bandejas administrativas, cola, seguimiento, rebotes y relayers. Cuentas muestra dominio, IP, cuota y consumo; la barra del administrador muestra carga, RAM y disco libre. Las consultas se ejecutan al abrir la vista o solicitar la herramienta.
+
 Los detalles de cuentas muestran etiquetas y valores compactos, con nombre y correo separados.
+Los listados, contadores y selectores de alojamiento excluyen cuentas con rol administrador. Pulsar una cabecera alterna el orden ascendente y descendente; cuota, disco y transferencia se ordenan por su valor numérico. Las cuentas administrativas conservan su acceso y permisos del sistema.
 
 El administrador dispone de una lista global de dominios con propietario y filtros por cuenta. Cada cuenta tiene acceso directo a sus archivos en `/home/usuario`; las cuentas normales mantienen su ámbito propio.
 
@@ -20,12 +23,12 @@ El [explorador administrativo opcional](docs/root-files.md) permite navegar desd
 
 Para migraciones, consultar los requisitos y límites del [importador nativo de respaldos completos cPanel](docs/cpanel-import.md). La carga gráfica de archivos cPanel no forma parte de la extensión visual.
 
-Versión 1.3.4. Los artefactos optimizados están en `dist`; el servidor no necesita Node. Para modificar recursos: `npm ci`, `npm run build`, `npm run check` y `npm run test:installer` en el equipo de desarrollo.
+Versión 1.3.5. Los artefactos optimizados están en `dist`; el servidor no necesita Node. Para modificar recursos: `npm ci`, `npm run build`, `npm run check` y `npm run test:installer` en el equipo de desarrollo.
 
 Requiere HestiaCP 1.10.5, Python 3.10 o posterior, el cargador `web/js/custom_scripts` y FileGator instalado en `web/fm/dist`. El instalador comprueba la estructura compatible de FileGator antes de modificar archivos. Clona la versión publicada en el servidor y ejecuta como root:
 
 ```sh
-git clone --branch v1.3.4 --depth 1 https://github.com/Virtual-IA-Technologies/Free-hosting-panel.git
+git clone --branch v1.3.5 --depth 1 https://github.com/Virtual-IA-Technologies/Free-hosting-panel.git
 cd Free-hosting-panel
 python3 scripts/install.py --dry-run --default-theme medium
 python3 scripts/install.py --default-theme medium
@@ -104,6 +107,8 @@ El proyecto no incluye usuarios, cuentas reales, dominios, direcciones IP ni cre
 Para un servidor nuevo, instalar primero Hestia con sus propios parámetros y después esta extensión. Mantener las copias de despliegues y clientes fuera de este repositorio. No ejecutar scripts de limpieza de un servidor como parte de la instalación de la plantilla.
 
 ## Arquitectura y límites
+
+Los módulos opcionales de [correo y SQL](docs/mail-and-sql-admin.md) y [respaldos](docs/backups.md) añaden operaciones administrativas enumeradas con sesión, rol, CSRF y auditoría. Se instalan por separado; sus credenciales y datos nunca forman parte de la distribución. Las fechas del panel usan día/mes/año y la zona horaria configurada del servidor, editable en **Hora y zona horaria**.
 
 En **Herramientas y Developers** hay accesos directos a PHP global, destinos, retención incremental, correo y claves API. Se abre la sección nativa correspondiente sin alterar sus formularios. Developers permite exportar un perfil sin secretos y guardar accesos externos por navegador. Proveedores, autorización inicial, alcance PHP y pendientes de IA se describen en [Integraciones](docs/integrations.md).
 
