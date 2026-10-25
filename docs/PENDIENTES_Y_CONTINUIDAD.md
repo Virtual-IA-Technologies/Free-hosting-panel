@@ -1,5 +1,12 @@
 # Estado y continuidad — VIP
 
+## Entrega 1.3.4 — correo y bases globales
+
+- Implementados inventarios administrativos por propietario para dominios/buzones de correo y bases de datos, con búsqueda y filtro. Se consultan solo al abrir cada servicio y seleccionan campos sin contraseñas, hashes ni claves SSO.
+- Gestión mediante cambio de cuenta y formularios nativos: contraseña y ajustes del buzón, listado de buzones y edición SQL. Se mantienen vistas propias explícitas; no se modifica el aislamiento de cuentas normales.
+- Enlace phpMyAdmin encadena el cambio de cuenta con el SSO nativo. Si no existe un enlace SSO compatible, queda en el listado nativo de bases; nunca crea credenciales globales ni cambia contraseñas para entrar.
+- Validado en sesión administrativa real: todos los registros de correo y SQL, apertura del formulario nativo de contraseña con el propietario correcto, ausencia de inventario global al entrar en la cuenta, móvil sin desbordamiento e inicio de sesión SSO efectivo en phpMyAdmin. No se guardaron cambios ni se activaron recursos suspendidos.
+
 ## Entrega 1.3.3 — dominios y archivos por propietario
 
 - Inventario global de dominios para administradores mediante consultas nativas de lectura, con campos públicos seleccionados y sin credenciales. Solo se consulta en la página de dominios; las sesiones de cuentas o suplantadas no reciben el inventario global.

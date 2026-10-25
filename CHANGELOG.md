@@ -1,5 +1,12 @@
 # Cambios
 
+## 1.3.4 — 2026-10-24
+
+- Correo y bases de datos de todas las cuentas en la vista administrativa, con propietario, búsqueda y filtros. Las cuentas normales y las sesiones suplantadas mantienen su ámbito.
+- Accesos al formulario nativo de contraseña y ajustes de cada buzón. Las listas incluyen recursos suspendidos; mostrarlos no los reactiva ni modifica DNS.
+- Entrada a phpMyAdmin desde la base seleccionada mediante el cambio de cuenta y SSO nativos, sin solicitar ni revelar contraseñas SQL en la interfaz global. Si no hay SSO, conserva el listado nativo.
+- Consultas de inventario solo al abrir el servicio, con campos seleccionados; sin sondeos, procesos ni dependencias nuevos.
+
 ## 1.3.3 — 2026-10-24
 
 - Dominios del servidor con propietario, alias, IP, disco y SSL; filtros locales por dominio y cuenta. Solo administradores; las cuentas normales conservan su lista propia.

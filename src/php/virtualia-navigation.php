@@ -32,7 +32,7 @@ if ($viaAdmin) {
 }
 $viaContext['phpmyadminAlias'] = (string) ($_SESSION['DB_PMA_ALIAS'] ?? 'phpmyadmin');
 $viaPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
-if ($_SESSION['userContext'] === 'admin' && defined('HESTIA_CMD') && in_array(rtrim((string) $viaPath, '/'), ['/list/user', '/list/web'], true)) {
+if ($_SESSION['userContext'] === 'admin' && defined('HESTIA_CMD') && in_array(rtrim((string) $viaPath, '/'), ['/list/user', '/list/web', '/list/mail', '/list/db'], true)) {
     $viaFileUsersOutput = [];
     exec(HESTIA_CMD . 'v-list-users json', $viaFileUsersOutput, $viaFileUsersStatus);
     $viaFileUsers = $viaFileUsersStatus === 0 ? json_decode(implode("\n", $viaFileUsersOutput), true) : null;
@@ -78,6 +78,42 @@ if ($viaAdmin && rtrim((string) $viaPath, '/') === '/list/web' && defined('HESTI
         }
     }
     $viaContext['domainsInventory'] = $viaInventory;
+}
+// Query only the service being viewed. Never send passwords, hashes or SSO keys.
+if ($viaAdmin && defined('HESTIA_CMD') && in_array(rtrim((string)$viaPath, '/'), ['/list/mail','/list/db'], true)
+    && ($_GET['vip_scope'] ?? '') !== 'account' && empty($_GET['domain'])) {
+    $viaService = rtrim((string)$viaPath, '/') === '/list/mail' ? 'mail' : 'db';
+    $viaServiceInventory = ['rows'=>[], 'available'=>is_array($viaFileUsers ?? null), 'failedAccounts'=>0];
+    $viaReadService = static function ($command, $arguments) {
+        $output=[]; $status=1;
+        exec(HESTIA_CMD.$command.' '.implode(' ',array_map('escapeshellarg',$arguments)).' json', $output, $status);
+        $result=$status===0 ? json_decode(implode("\n",$output),true) : null;
+        return is_array($result) ? $result : null;
+    };
+    foreach (($viaFileUsers ?? []) as $viaOwner=>$viaOwnerInfo) {
+        if (!preg_match('/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,31}$/D', (string)$viaOwner)) continue;
+        $viaRecords=$viaReadService($viaService==='mail'?'v-list-mail-domains':'v-list-databases',[(string)$viaOwner]);
+        if ($viaRecords===null) { $viaServiceInventory['failedAccounts']++; continue; }
+        foreach ($viaRecords as $viaName=>$viaInfo) {
+            $viaCommon=['owner'=>(string)$viaOwner,'ownerName'=>(string)($viaOwnerInfo['NAME']??$viaOwner),
+                'suspended'=>($viaInfo['SUSPENDED']??'')==='yes'];
+            if ($viaService==='db') {
+                $viaServiceInventory['rows'][]=$viaCommon+['name'=>(string)$viaName,'dbuser'=>(string)($viaInfo['DBUSER']??''),
+                    'type'=>(string)($viaInfo['TYPE']??''),'host'=>(string)($viaInfo['HOST']??''),'disk'=>(string)($viaInfo['U_DISK']??'0')];
+            } else {
+                $viaMailboxes=$viaReadService('v-list-mail-accounts',[(string)$viaOwner,(string)$viaName]);
+                if ($viaMailboxes===null) { $viaServiceInventory['failedAccounts']++; continue; }
+                if (!$viaMailboxes) $viaMailboxes=[''=>[]];
+                foreach ($viaMailboxes as $viaMailbox=>$viaMailboxInfo) {
+                    $viaServiceInventory['rows'][]=$viaCommon+['domain'=>(string)$viaName,'account'=>(string)$viaMailbox,
+                        'accountSuspended'=>($viaMailboxInfo['SUSPENDED']??'')==='yes',
+                        'forward'=>(string)($viaMailboxInfo['FWD']??''),'disk'=>(string)($viaMailboxInfo['U_DISK']??'0'),
+                        'quota'=>(string)($viaMailboxInfo['QUOTA']??'')];
+                }
+            }
+        }
+    }
+    $viaContext[$viaService==='mail'?'mailInventory':'databasesInventory']=$viaServiceInventory;
 }
 if ($viaAdmin && in_array(rtrim((string) $viaPath, '/'), ['/list/user', '/list/server'], true)) {
     $viaMemory = [];

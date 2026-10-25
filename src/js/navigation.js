@@ -55,11 +55,12 @@
   nativeLinks.forEach(a => {
     const u = new URL(a.href, location.origin);
     const part = u.pathname.split('/').filter(Boolean)[1]?.toUpperCase();
-    if (labels[part]) hostingGroup[1].push([context.admin&&part==='WEB'?'Dominios de esta cuenta':labels[part][0], context.admin&&part==='WEB'?u.pathname+'?vip_scope=account':u.pathname + u.search, labels[part][1], a.querySelector('.main-menu-stats')?.textContent.replace(/\s+/g, ' ').trim() || 'Administrar este servicio']);
+    const ownLabels={WEB:'Dominios de esta cuenta',MAIL:'Correo de esta cuenta',DB:'Bases de datos de esta cuenta'};
+    if (labels[part]) hostingGroup[1].push([context.admin&&ownLabels[part]?ownLabels[part]:labels[part][0], context.admin&&ownLabels[part]?u.pathname+'?vip_scope=account':u.pathname + u.search, labels[part][1], a.querySelector('.main-menu-stats')?.textContent.replace(/\s+/g, ' ').trim() || 'Administrar este servicio']);
   });
-  if(context.admin)for(const [path,label] of [['/list/web/','Dominios'],['/list/db/','Bases de datos']]){
+  if(context.admin)for(const [path,label] of [['/list/web/','Dominios'],['/list/mail/','Correo electrónico'],['/list/db/','Bases de datos']]){
     const item=hostingGroup[1].find(x=>new URL(x[1],location.origin).pathname===path);
-    if(item)groups[0][1].push([label,path==='/list/web/'?path:item[1],item[2],path==='/list/web/'?'Dominios de todas las cuentas y su propietario':item[3]]);
+    if(item)groups[0][1].push([label,path,item[2],'Recursos de todas las cuentas y su propietario']);
   }
   const shellPath=context.admin?'/list/user/':new URL(hostingGroup[1][0]?.[1]||'/list/web/',location.origin).pathname;
   if(nativeFileLink){const href=context.integratedFiles===false?nativeFileLink.getAttribute('href'):shellPath+'#archivos';groups[0][1].push(['Archivos y documentos',href,'folder-open','Explorar y gestionar los archivos de esta cuenta']);nativeFileLink.href=href;}
@@ -97,7 +98,7 @@
   const files=node('section','vip-files');files.id='vip-files';files.setAttribute('aria-label','Gestor de archivos');content.append(files);
   if(!context.admin&&!context.fileAdminUser)files.append(node('p','vip-file-account-picker',`Carpeta de esta cuenta: /home/${context.user}`));
   let fileStarted=false;
-  const footer=document.querySelector('.app-footer');if(footer){footer.append(node('span','vip-product-brand',' · '+(context.appName||'VIP - Virtual IA Panel')+' v1.3.3'));}
+  const footer=document.querySelector('.app-footer');if(footer){footer.append(node('span','vip-product-brand',' · '+(context.appName||'VIP - Virtual IA Panel')+' v1.3.4'));}
   if (context.admin && /^\/list\/user\/?$/.test(location.pathname)) {
     const hint=node('aside','vip-account-hint','Administra cada cuenta desde sus accesos directos. Para aumentar o reducir espacio, ajusta su plan en Recursos. ');
     const plans=node('a','','Administrar planes');plans.href='/list/package/';hint.append(plans);heading.after(hint);
