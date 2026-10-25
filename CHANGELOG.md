@@ -1,5 +1,14 @@
 # Cambios
 
+## 1.3.8 — 2026-10-25
+
+- Firewall con pestañas de bloqueos, lista negra/blanca web, motivo y fecha, historial y límites independientes de solicitudes y conexiones TCP; comprobación cron opcional, sin instalar CSF.
+- Aviso de IP pública administrativa y rechazo de autobloqueo en el servidor. Detalle por IP de conexiones, solicitudes recientes y trabajadores de solicitudes PHP activas observadas.
+
+- Actividad administrativa opcional: contador compacto de conexiones web en Inicio y detalle bajo demanda de IP, procesos, CPU/RSS, SQL y solicitudes recientes sin parámetros de URL.
+- Finalización confirmada y auditada de trabajadores PHP de alojamiento mediante selección firmada, caducidad e identidad pidfd; servicios críticos protegidos. Sin nuevos servicios residentes.
+- Actualización manual o cada cinco segundos únicamente con el detalle abierto y visible; conexiones y procesos diferenciados de usuarios y solicitudes activas. Guía en `docs/activity.md`.
+
 ## 1.3.7 — 2026-10-24
 
 - Inventario DNS administrativo de todas las cuentas, con propietario, registros, TTL, SOA y filtros. Edición y creación mediante los formularios nativos de la cuenta propietaria; clientes conservan su aislamiento. Sin sondeos ni servicios adicionales.

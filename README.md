@@ -110,6 +110,8 @@ Para un servidor nuevo, instalar primero Hestia con sus propios parámetros y de
 
 ## Arquitectura y límites
 
+El módulo opcional de [actividad y firewall web](docs/activity.md) añade el enlace de conexiones en Inicio, detalle por IP/PID y finalización confirmada de trabajadores PHP, además de listas negra/blanca web y límites automáticos configurables. Muestra la IP pública administrativa y evita su autobloqueo. Las reglas automáticas se instalan pausadas; habilitar el límite de conexiones añade una comprobación cron cada minuto. Usa el firewall y Fail2Ban existentes, sin instalar CSF.
+
 Los módulos opcionales de [correo y SQL](docs/mail-and-sql-admin.md) y [respaldos](docs/backups.md) añaden operaciones administrativas enumeradas con sesión, rol, CSRF y auditoría. Se instalan por separado; sus credenciales y datos nunca forman parte de la distribución. Las fechas del panel usan día/mes/año y la zona horaria configurada del servidor, editable en **Hora y zona horaria**.
 
 En **Herramientas y Developers** hay accesos directos a PHP global, destinos, retención incremental, correo y claves API. Se abre la sección nativa correspondiente sin alterar sus formularios. Developers permite exportar un perfil sin secretos y guardar accesos externos por navegador. Proveedores, autorización inicial, alcance PHP y pendientes de IA se describen en [Integraciones](docs/integrations.md).

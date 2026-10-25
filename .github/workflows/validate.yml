@@ -24,6 +24,7 @@ jobs:
       - run: npm run test:software-endpoint
       - run: python tests/mail-admin.py
       - run: python tests/backups.py
+      - run: python tests/activity.py
       - run: node tests/dates.cjs
       - run: php -n tests/webmail-dates.php
       - run: python -m py_compile scripts/*.py

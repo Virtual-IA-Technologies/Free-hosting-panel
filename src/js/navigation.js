@@ -9,7 +9,7 @@
   try{const pending=JSON.parse(sessionStorage.getItem('vip-files-pending')||'null');if(pending?.owner===context.user&&context.fileAdminUser){sessionStorage.removeItem('vip-files-pending');history.replaceState(null,'',location.pathname+location.search+'#archivos');}}catch{}
   document.addEventListener('click',event=>{const link=event.target.closest('a[data-vip-files-owner]');if(!link||!context.fileAdminUser)return;try{sessionStorage.setItem(fileLocationKey,JSON.stringify({owner:link.dataset.vipFilesOwner}));sessionStorage.setItem('vip-files-pending',JSON.stringify({owner:link.dataset.vipFilesOwner}));}catch{}});
   const token=context.csrfToken || document.getElementById('token')?.getAttribute('token');
-  const secureHref=href=>{const u=new URL(href,location.origin);if(u.origin===location.origin && u.search && token && !u.searchParams.has('token'))u.searchParams.set('token',token);return u.pathname+u.search+u.hash;};
+  const secureHref=href=>{const u=new URL(href,location.origin);if(u.origin===location.origin && (u.search || u.pathname.startsWith('/list/firewall')) && token && !u.searchParams.has('token'))u.searchParams.set('token',token);return u.pathname+u.search+u.hash;};
   const comparableSearch=value=>{const p=new URLSearchParams(value);p.delete('token');return p.toString();};
   const nativeFileLink=[...document.querySelectorAll('.top-bar-menu a[href]')].find(a=>new URL(a.href).pathname==='/fm/');
   const nativeLinks = [...document.querySelectorAll('.main-menu-item-link')];

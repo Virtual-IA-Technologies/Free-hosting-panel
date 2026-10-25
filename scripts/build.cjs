@@ -5,12 +5,13 @@ const path=require('node:path');
 const zlib=require('node:zlib');
 const root=path.resolve(__dirname,'..'),check=process.argv.includes('--check');
 const sets={
- 'panel.min.js':['js/appearance.js','js/dates.js','js/navigation.js','js/accounts.js','js/domains.js','js/service-inventory.js','js/operations.js','js/mail-admin.js','js/resources.js','js/tabs.js','js/tools.js','js/database-links.js','js/interactions.js','js/software-loader.js','js/backup-loader.js','js/layout.js','js/boot.js'],
+ 'panel.min.js':['js/appearance.js','js/dates.js','js/navigation.js','js/accounts.js','js/domains.js','js/service-inventory.js','js/operations.js','js/mail-admin.js','js/resources.js','js/tabs.js','js/tools.js','js/database-links.js','js/interactions.js','js/software-loader.js','js/backup-loader.js','js/activity-loader.js','js/dialog-backdrop.js','js/traffic-guard.js','js/layout.js','js/boot.js'],
+ 'activity.min.js':['js/activity.js'],
  'backups.min.js':['js/backups.js'],
  'software.min.js':['js/software.js'],
  'files.min.js':['js/files.js'],
  'login.min.js':['js/appearance.js','js/login.js'],
- 'panel.min.css':['css/appearance.css','css/navigation.css','css/interactions.css','css/tabs.css','css/software.css','css/layout.css'],
+ 'panel.min.css':['css/appearance.css','css/navigation.css','css/interactions.css','css/tabs.css','css/software.css','css/activity.css','css/layout.css'],
  'login.min.css':['css/appearance.css'],
  'virtualia.min.css':['css/virtualia.css']
 };

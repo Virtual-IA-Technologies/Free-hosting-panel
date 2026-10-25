@@ -1,5 +1,10 @@
 # Estado y continuidad — VIP
 
+## Entrega 1.3.8 — actividad del servidor
+
+- Módulo opcional de actividad, instalado por separado: contador de conexiones web en Inicio y detalle de procesos/consumo, IP, SQL y registros recientes. No equivale a usuarios autenticados ni permite atribuir una URL activa a cada PID.
+- Finalización SIGTERM de trabajadores PHP de alojamiento con confirmación, auditoría, selección firmada y pidfd. Procesos críticos protegidos; SQL es de lectura. Consultar `activity.md` y el resultado de validación/despliegue de la entrega.
+
 ## Entrega 1.3.7 — zonas DNS administrativas
 
 - Inventario global de zonas con propietario, registros, TTL, SOA y filtros; creación y edición mediante formularios nativos de la cuenta propietaria.
@@ -74,5 +79,7 @@
 - No se iniciaron migraciones de clientes ni cambios de DNS. Las migraciones requieren instrucciones y compatibilidad de cada proyecto, respaldos y restauración probada antes de transferir datos.
 
 ## Retomar
+
+Ampliación 1.3.8: firewall con listas negra/blanca web, inventario nativo por IP/cadena con fecha y motivo, e historial propio. Aviso de IP pública del administrador y rechazo del autobloqueo en el helper. Detalle por IP de conexiones y procesos PHP con solicitud activa observada. Límites de solicitudes y conexiones separados, inicialmente pausados; cron de conexiones solo al habilitar la regla. Validaciones: once pruebas del helper y ciclo real de altas/bajas con una IP reservada, comprobación de permisos, lista blanca y presentación móvil. La publicación se verifica en GitHub; no inferirla de este documento.
 
 Leer `AGENTS.md` y `LECTURA_OBLIGATORIA.md`, consultar este estado y revisar únicamente diferencias nuevas. Mantener credenciales, respaldos, detalles SSH e inventarios privados fuera del repositorio. Para clonar, instalar, actualizar o revertir, seguir [installation.md](installation.md).

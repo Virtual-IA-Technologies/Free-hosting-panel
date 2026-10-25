@@ -35,6 +35,7 @@ if ($viaAdmin) {
     $viaContext['serverQuick']=['load'=>sys_getloadavg()?:[],'memoryTotal'=>$viaQuickMem['MemTotal']??0,
         'memoryAvailable'=>$viaQuickMem['MemAvailable']??0,'diskTotal'=>@disk_total_space('/')?:0,'diskFree'=>@disk_free_space('/')?:0];
     $viaContext['mailAdmin']=is_file('/usr/local/lib/virtualia-mail-admin/enabled');
+    $viaContext['activityAdmin']=is_file('/usr/local/lib/virtualia-activity-admin/enabled');
     $viaContext['sqlAdmin']=is_file('/usr/local/lib/virtualia-mail-admin/sql-enabled');
 }
 $viaContext['phpmyadminAlias'] = (string) ($_SESSION['DB_PMA_ALIAS'] ?? 'phpmyadmin');
