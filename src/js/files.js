@@ -5,6 +5,40 @@
  const key='vip-files-view:'+context.user;
  const host=document.getElementById('vip-files');
  if(!host)return;
+ const rootMode=!!context.rootFiles;
+ const accounts=!rootMode&&Array.isArray(context.fileAccounts)?context.fileAccounts:[],locationKey='vip-files-location:'+context.fileAdminUser;
+ const make=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
+ let directoryView,pathBar,pathLabel,nativeStarted=false,nativeVisible=false;
+ const remember=state=>{try{sessionStorage.setItem(locationKey,JSON.stringify(state));}catch{}};
+ function enterAccount(owner){
+  if(!accounts.some(a=>a.user===owner))return;
+  remember({owner});
+  if(owner===context.user){directoryView.hidden=true;pathLabel.textContent='/home/'+owner;showNative();return;}
+  try{sessionStorage.setItem('vip-files-pending',JSON.stringify({owner}));}catch{}
+  const url=new URL('/login/',location.origin);url.searchParams.set('loginas',owner);url.searchParams.set('edit_link','/list/web/');url.searchParams.set('token',context.csrfToken||'');location.assign(url.href);
+ }
+ function rootButton(parent,label,action){const b=make('button','',label);b.type='button';b.onclick=action;parent.append(b);return b;}
+ function virtualDirectory(path='/home'){
+  nativeVisible=false;remember({path});pathLabel.textContent=path;directoryView.hidden=false;
+  const mount=host.querySelector('#vip-file-native-view');if(mount)mount.hidden=true;
+  const table=make('table','vip-home-table'),head=make('thead'),titles=make('tr');
+  ['Nombre','Propietario / cuenta','Ruta'].forEach(text=>{const th=make('th','',text);th.scope='col';titles.append(th);});head.append(titles);table.append(head);const body=make('tbody');
+  const add=(name,owner,fullPath,action)=>{const row=make('tr'),nameCell=make('td');const open=rootButton(nameCell,'📁 '+name,action);open.setAttribute('aria-label','Abrir '+fullPath);row.append(nameCell,make('td','',owner),make('td','',fullPath));body.append(row);};
+  if(path==='/')add('home','Servidor','/home',()=>virtualDirectory('/home'));
+  else accounts.slice().sort((a,b)=>a.user.localeCompare(b.user)).forEach(a=>add(a.user,a.name,'/home/'+a.user,()=>enterAccount(a.user)));
+  table.append(body);directoryView.replaceChildren(table);
+ }
+ function showNative(){
+  nativeVisible=true;
+  if(directoryView)directoryView.hidden=true;
+  const mount=host.querySelector('#vip-file-native-view');if(mount)mount.hidden=false;
+  if(!nativeStarted){nativeStarted=true;boot();}
+ }
+ if(accounts.length){
+  pathBar=make('nav','vip-file-path');pathBar.setAttribute('aria-label','Ruta de archivos');rootButton(pathBar,'/ (raíz)',()=>virtualDirectory('/'));rootButton(pathBar,'home',()=>virtualDirectory('/home'));pathLabel=make('strong','','/home');pathBar.append(pathLabel);
+  directoryView=make('div','vip-home-directory');directoryView.id='vip-home-directory';host.append(pathBar,directoryView);
+ }
+ if(rootMode){pathBar=make('nav','vip-file-path');pathBar.setAttribute('aria-label','Ruta de archivos');pathLabel=make('strong','','/');pathBar.append(pathLabel);host.append(pathBar);}
  function enhance(doc,c){
   const dropzone=host.querySelector('#dropzone'),browser=host.querySelector('#browser');
   if(!dropzone||!browser)return;
@@ -79,8 +113,8 @@
   const rail=node('aside');rail.id='vip-file-folders';rail.setAttribute('aria-label','Carpetas de la ubicación actual');
   const button=(parent,text,action)=>{const b=node('button',text);b.type='button';b.onclick=action;parent.append(b);return b;};
   const click=selector=>host.querySelector(selector)?.click();
-  button(tools,'Inicio',()=>click('.breadcrumb li:first-child a'));
-  button(tools,'Subir nivel',()=>{const items=host.querySelectorAll('.breadcrumb li a');if(items.length>1)items[items.length-2].click();});
+  button(tools,'Inicio',()=>accounts.length?virtualDirectory('/'):click('.breadcrumb li:first-child a'));
+  button(tools,'Subir nivel',()=>{const items=host.querySelectorAll('.breadcrumb li a');if(items.length>1)items[items.length-2].click();else if(accounts.length)virtualDirectory('/home');});
   button(tools,'Buscar',()=>click('#search'));
   button(tools,'Árbol de carpetas',()=>click('#sitemap'));
   const list=button(tools,'Lista',()=>setView('list')),grid=button(tools,'Cuadrícula',()=>setView('grid'));
@@ -91,6 +125,27 @@
   dropzone.prepend(tools,rail);
   const paint=()=>{
    rail.replaceChildren(node('h2','Carpetas'));
+   if(accounts.length){button(rail,'/home',()=>virtualDirectory('/home'));accounts.forEach(a=>button(rail,'📁 '+a.user,()=>enterAccount(a.user)));rail.append(node('h2',context.user));const parts=[...browser.querySelectorAll('.breadcrumb li')].slice(1).map(e=>e.textContent.trim()).filter(Boolean);if(nativeVisible)pathLabel.textContent='/home/'+context.user+(parts.length?'/'+parts.join('/'):'');}
+   const parts=[...browser.querySelectorAll('.breadcrumb li')].slice(1).map(e=>e.textContent.trim()).filter(Boolean);
+   if(rootMode)pathLabel.textContent='/'+parts.join('/');
+   if(context.folderSizes){
+    browser.querySelectorAll('tr.type-dir').forEach(row=>{
+     const name=row.querySelector('a.name')?.textContent.trim(),cell=row.querySelector('td:nth-child(4)');
+     if(!name||name==='..'||!cell||cell.querySelector('[data-vip-size]'))return;
+     const path=[...parts,name].join('/'),calculate=node('button','Calcular');calculate.type='button';calculate.dataset.vipSize=path;
+     calculate.title='Tamaño del contenido; resultado en caché durante 5 minutos';calculate.setAttribute('aria-label','Calcular tamaño de '+name);calculate.className='button is-small';
+     calculate.onclick=async event=>{
+      event.stopPropagation();calculate.disabled=true;calculate.textContent='Calculando…';
+      try{
+       const response=await fetch('/fm/?vip_folder_size=1',{method:'POST',credentials:'same-origin',body:new URLSearchParams({path,token:context.csrfToken||''})});
+       const data=await response.json();if(!response.ok)throw Error(data.error||'No disponible');
+       let size=data.bytes,index=0;const units=['B','KB','MB','GB','TB'];while(size>=1024&&index<units.length-1){size/=1024;index++;}
+       calculate.textContent=new Intl.NumberFormat('es',{maximumFractionDigits:1}).format(size)+' '+units[index];calculate.title='Contenido de la carpeta, sin seguir enlaces ni cruzar discos; caché de 5 minutos';
+      }catch(error){calculate.textContent='Reintentar';calculate.title=error.message;}finally{calculate.disabled=false;}
+     };
+     cell.replaceChildren(calculate);
+    });
+   }
    button(rail,'⌂ Carpeta principal',()=>click('.breadcrumb li:first-child a'));
    const folders=[...browser.querySelectorAll('tr.type-dir a.name')];
    folders.forEach(a=>button(rail,'📁 '+a.textContent.trim(),()=>a.click()));
@@ -134,7 +189,7 @@
     return scopeStyle((await r.text()).replace(/url\((['"]?)([^)'"\s]+)\1\)/g,(all,quote,value)=>value.startsWith('data:')?all:'url("'+new URL(value,url).href+'")'));
    }));
    const style=document.createElement('style');style.id='vip-file-native-style';style.textContent=css.join('\n');document.head.append(style);
-   const mount=document.createElement('div');mount.id='vip-file-mount';host.append(mount);
+   const nativeView=document.createElement('div');nativeView.id='vip-file-native-view';nativeView.hidden=!nativeVisible;const mount=document.createElement('div');mount.id='vip-file-mount';nativeView.append(mount);host.append(nativeView);
    const version=encodeURIComponent(context.assetVersion||'1.0.3');
    await loadScript('/js/virtualia/filegator-vendor.js?v='+version);
    await loadScript('/js/virtualia/filegator-app.js?v='+version);
@@ -147,5 +202,5 @@
    const fallback=document.createElement('a');fallback.href='/fm/';fallback.textContent='Abrir gestor nativo';loading.append(fallback);
   }
  }
- boot();
+ if(accounts.length){let state;try{state=JSON.parse(sessionStorage.getItem(locationKey)||'null');}catch{}if(state?.owner===context.user){pathLabel.textContent='/home/'+context.user;showNative();}else virtualDirectory(state?.path==='/'?'/':'/home');}else showNative();
 })();

@@ -13,6 +13,7 @@ const {chromium}=require('playwright-core');
   await page.locator('#via-sidebar .via-link').first().waitFor();
   const context=await page.locator('#via-context').evaluate(e=>JSON.parse(e.textContent));
   assert(context.user===user&&!context.admin&&!context.server,'Contexto de cuenta o métricas incorrecto');
+  assert(!context.fileAccounts&&!context.fileAdminUser&&!context.domainsInventory,'Datos globales visibles en cuenta normal');
   assert(await page.locator('#via-sidebar a[href="/add/user/"],#via-sidebar a[href="/list/ip/"],#via-home').count()===0,'Herramientas globales visibles en cuenta normal');
   assert(await page.locator('#via-sidebar .via-link[href="/list/web/"]').count()===1,'Dominios duplicados en el menú de la cuenta');
   await page.locator('#via-sidebar a[href="/list/web/"]').first().click();await page.waitForLoadState('networkidle');

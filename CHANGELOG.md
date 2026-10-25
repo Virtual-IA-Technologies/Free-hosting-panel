@@ -1,5 +1,14 @@
 # Cambios
 
+## 1.3.3 — 2026-10-24
+
+- Dominios del servidor con propietario, alias, IP, disco y SSL; filtros locales por dominio y cuenta. Solo administradores; las cuentas normales conservan su lista propia.
+- Enumerar las cuentas en Panel, acceso nativo a Archivos por cuenta y selector de carpetas `/home/usuario` en Archivos del administrador.
+- Inventario de lectura consultado únicamente al abrir Dominios, sin sondeos ni servicios adicionales; gestión y archivos conservan la suplantación autorizada y los tokens nativos.
+- Una sola opción activa en el menú: Versiones y actualizaciones deja de resaltar también Estado del servidor.
+- Explorador raíz opcional para el administrador, integrado con la sesión nativa y operaciones locales enumeradas; las cuentas normales conservan su aislamiento. Tamaños de carpetas bajo demanda, caché y prioridad baja. Instalador y reversión independientes.
+- Vista previa mediante enlaces directos configurados por sitio en el servidor; sin descargas ni cambios DNS desde el tema.
+
 ## 1.3.2 — 2026-10-24
 
 - Detalles de registros compactos con etiquetas de la tabla, nombre y correo separados, y valores sin espacios de indentación ni accesos concatenados. Diseño adaptable sin consultas adicionales.

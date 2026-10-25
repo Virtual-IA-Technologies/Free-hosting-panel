@@ -12,6 +12,7 @@ const {chromium}=require('playwright-core');
   await require('./login.cjs')(page,base,user,password);await page.waitForURL('**/list/user/**');
   const panel=page.locator('#via-sidebar .via-group').first();
   assert(await panel.getByRole('link',{name:'Dominios',exact:true}).count()===1,'Dominios fuera del grupo Panel');
+  assert(await panel.getByRole('link',{name:'Enumerar las cuentas',exact:true}).count()===1,'Cuentas fuera del grupo Panel');
   assert(await panel.getByRole('link',{name:'Bases de datos',exact:true}).count()===1,'Bases de datos fuera del grupo Panel');
   await page.locator('#via-sidebar a[href$="#archivos"]').click();
   const frame=page.locator('#vip-files');await frame.locator('#vip-file-tools').waitFor({timeout:20000});

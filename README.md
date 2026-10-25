@@ -4,18 +4,26 @@ Panel de administración con identidad Virtual IA, construido como una extensió
 
 Login grafito con usuario y contraseña juntos, recuperación nativa y [servicios por puertos independientes](docs/service-access.md). Los servicios adicionales son opcionales y se provisionan expresamente; instalar el tema no abre puertos ni crea cuentas.
 
-La versión 1.3.2 incorpora [pestañas de configuración](docs/configuration-tabs.md) y un [gestor administrativo opcional](docs/software-manager.md) para versiones, PHP y extensiones. El gestor tiene instalación separada y conserva autenticación, roles y CSRF nativos. Su estado de validación y publicación figura en [continuidad](docs/PENDIENTES_Y_CONTINUIDAD.md).
+La versión 1.3.3 incorpora [pestañas de configuración](docs/configuration-tabs.md) y un [gestor administrativo opcional](docs/software-manager.md) para versiones, PHP y extensiones. El gestor tiene instalación separada y conserva autenticación, roles y CSRF nativos. Su estado de validación y publicación figura en [continuidad](docs/PENDIENTES_Y_CONTINUIDAD.md).
 
 ## Instalación
 
 Los detalles de cuentas muestran etiquetas y valores compactos, con nombre y correo separados.
 
-Versión 1.3.2. Los artefactos optimizados están en `dist`; el servidor no necesita Node. Para modificar recursos: `npm ci`, `npm run build`, `npm run check` y `npm run test:installer` en el equipo de desarrollo.
+El administrador dispone de una lista global de dominios con propietario y filtros por cuenta. Cada cuenta tiene acceso directo a sus archivos en `/home/usuario`; las cuentas normales mantienen su ámbito propio.
+
+El [explorador administrativo opcional](docs/root-files.md) permite navegar desde la raíz real `/`, entrar en `/home/usuario` y editar archivos. Las cuentas normales conservan su carpeta. El tamaño del contenido de las carpetas se calcula a petición, con caché y prioridad baja.
+
+«Probar por IP» abre una URL de vista previa configurada en el servidor, sin descargar programas. Es una preparación independiente por sitio mediante el proxy web existente; el tema no configura DNS ni crea esas rutas automáticamente. Las pruebas por dominio real antes del DNS siguen siendo necesarias para comprobar cookies, enlaces absolutos y conectores que dependan del hostname.
+
+Para migraciones, consultar los requisitos y límites del [importador nativo de respaldos completos cPanel](docs/cpanel-import.md). La carga gráfica de archivos cPanel no forma parte de la extensión visual.
+
+Versión 1.3.3. Los artefactos optimizados están en `dist`; el servidor no necesita Node. Para modificar recursos: `npm ci`, `npm run build`, `npm run check` y `npm run test:installer` en el equipo de desarrollo.
 
 Requiere HestiaCP 1.10.5, Python 3.10 o posterior, el cargador `web/js/custom_scripts` y FileGator instalado en `web/fm/dist`. El instalador comprueba la estructura compatible de FileGator antes de modificar archivos. Clona la versión publicada en el servidor y ejecuta como root:
 
 ```sh
-git clone --branch v1.3.2 --depth 1 https://github.com/Virtual-IA-Technologies/Free-hosting-panel.git
+git clone --branch v1.3.3 --depth 1 https://github.com/Virtual-IA-Technologies/Free-hosting-panel.git
 cd Free-hosting-panel
 python3 scripts/install.py --dry-run --default-theme medium
 python3 scripts/install.py --default-theme medium

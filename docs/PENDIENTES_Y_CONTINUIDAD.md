@@ -1,5 +1,15 @@
 # Estado y continuidad — VIP
 
+## Entrega 1.3.3 — dominios y archivos por propietario
+
+- Inventario global de dominios para administradores mediante consultas nativas de lectura, con campos públicos seleccionados y sin credenciales. Solo se consulta en la página de dominios; las sesiones de cuentas o suplantadas no reciben el inventario global.
+- Tabla con propietario, alias, IP, disco y SSL, filtros locales y accesos nativos a la cuenta y sus archivos. Las operaciones de edición siguen en las páginas nativas de cada cuenta.
+- Enumerar las cuentas en Panel. El módulo opcional de archivos autorizado permite recorrer y editar la raíz real como administrador. Las cuentas normales conservan su ámbito.
+- Validado en sesión real: todos los dominios y propietarios, filtros, móvil, cambio nativo a una cuenta y gestor de archivos de esa cuenta. La sesión suplantada no recibe el inventario global. Se corrigió el usuario efectivo de presentación para respetar la cuenta seleccionada. Sin errores JavaScript.
+- Instalador reversible validado; recursos desplegados con respaldo. Guía de importación cPanel documentada como función nativa por CLI; la extensión no añade un endpoint privilegiado de carga o restauración.
+- Archivos muestra `/`, `/home` y las carpetas reales dentro de un solo gestor. Validado recorrido administrativo, operaciones con la identidad web real y aislamiento de una cuenta normal. Tamaños de carpetas bajo demanda con caché; instalación y límites en `root-files.md`.
+- Vista previa con enlaces directos por sitio mediante el proxy existente, sin descargas ni cambios DNS. HTTP 200 comprobado en las rutas preparadas; los recorridos autenticados y la equivalencia por dominio real deben validarse antes del corte. Una sola opción activa en los menús compartidos por ruta.
+
 ## Entrega 1.3.2 — detalles de registros
 
 - Corregida la extracción de valores del detalle: normaliza espacios del HTML, excluye acciones y etiquetas móviles repetidas, separa nombre y correo y recupera los títulos de columna.

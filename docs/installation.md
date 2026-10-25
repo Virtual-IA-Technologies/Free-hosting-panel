@@ -9,6 +9,8 @@ VIP es una extensión de presentación para una instalación existente de Hestia
 3. Comprueba que puedes iniciar sesión en Hestia y conserva una sesión SSH de recuperación. Habilita HTTPS con un certificado válido para tu hostname siguiendo la [documentación SSL](https://hestiacp.com/docs/server-administration/ssl-certificates).
 4. Si deseas archivos integrados, instala el gestor de archivos nativo de Hestia. VIP verifica su compatibilidad antes de aplicar cambios.
 
+Para que el administrador recorra el servidor desde `/`, instala por separado el [módulo opcional de archivos](root-files.md). El tema no amplía por sí solo los permisos del gestor.
+
 El certificado del panel, los certificados de sitios y los certificados de correo tienen ámbitos diferentes. Un certificado para el hostname no cubre automáticamente los dominios de las cuentas. Configura SSL de cada sitio en sus opciones web. No retires un sitio usado para emitir o renovar certificados sin preparar antes un método de renovación independiente.
 
 ## 2. Descargar e instalar
@@ -18,7 +20,7 @@ En el servidor, con una cuenta que pueda usar `sudo`:
 ```sh
 git clone https://github.com/Virtual-IA-Technologies/Free-hosting-panel.git
 cd Free-hosting-panel
-git checkout v1.3.2
+git checkout v1.3.3
 sudo python3 scripts/install.py --dry-run --default-theme medium
 sudo python3 scripts/install.py --default-theme medium
 ```

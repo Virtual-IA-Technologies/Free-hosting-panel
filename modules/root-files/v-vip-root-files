@@ -1,0 +1,177 @@
+#!/usr/bin/python3
+"""Finite local file operations for the optional authenticated Hestia file adapter."""
+import base64
+import fcntl
+import hashlib
+import json
+import mimetypes
+import os
+from pathlib import Path
+import re
+import shutil
+import stat
+import subprocess
+import sys
+import tempfile
+import time
+
+STATE = Path('/opt/virtual-ia-panel/root-files-state')
+SPECIAL = ('/proc', '/sys', '/dev', '/run')
+
+def emit(value):
+    print(json.dumps(value, ensure_ascii=True))
+
+def main():
+    if os.geteuid() != 0 or len(sys.argv) != 4:
+        raise ValueError('Invalid invocation')
+    actor, operation, encoded = sys.argv[1:]
+    if not re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9_-]{0,31}', actor):
+        raise ValueError('Invalid account')
+    user_conf = Path('/usr/local/hestia/data/users') / actor / 'user.conf'
+    conf = user_conf.read_text()
+    admin = bool(re.search(r"^ROLE=['\"]?admin['\"]?$", conf, re.M))
+    args = json.loads(base64.b64decode(encoded, validate=True))
+    if operation not in {'stat', 'list', 'read', 'write', 'mkdir', 'rename', 'copy', 'delete', 'chmod', 'size'}:
+        raise ValueError('Operation not allowed')
+    if operation != 'size' and not admin:
+        raise PermissionError('Administrator required')
+    if not admin and args.get('root'):
+        raise PermissionError('Administrator required')
+    scope = '/' if admin and args.get('root') else '/home/' + actor
+
+    def resolve(value):
+        if not isinstance(value, str) or '\0' in value or any(p == '..' for p in value.split('/')):
+            raise ValueError('Invalid path')
+        path = os.path.realpath(os.path.join(scope, value.lstrip('/')))
+        if scope != '/' and os.path.commonpath((scope, path)) != scope:
+            raise PermissionError('Outside account')
+        return path
+
+    path = resolve(args.get('path', ''))
+    virtual = args.get('path', '').strip('/')
+    restricted = any(path == p or path.startswith(p + '/') for p in SPECIAL)
+
+    def metadata(actual, relative):
+        info = os.stat(actual)
+        if not (stat.S_ISDIR(info.st_mode) or stat.S_ISREG(info.st_mode)):
+            return None
+        result = {'path': relative, 'type': 'dir' if stat.S_ISDIR(info.st_mode) else 'file',
+                  'timestamp': int(info.st_mtime), 'permissions': format(stat.S_IMODE(info.st_mode), '03o'),
+                  'visibility': 'public' if info.st_mode & 4 else 'private'}
+        if result['type'] == 'file':
+            result['size'] = info.st_size
+            result['mimetype'] = mimetypes.guess_type(actual)[0] or 'application/octet-stream'
+        return result
+
+    if operation == 'stat':
+        emit(metadata(path, virtual) if os.path.exists(path) else False)
+        return
+    if operation == 'list':
+        result = []
+        def walk(directory, prefix):
+            for entry in os.scandir(directory):
+                relative = '/'.join(filter(None, (prefix, entry.name)))
+                try:
+                    item = metadata(entry.path, relative)
+                    if item:
+                        result.append(item)
+                        if len(result) > 100000:
+                            raise ValueError('Directory listing too large')
+                        if args.get('recursive') and item['type'] == 'dir' and not entry.is_symlink():
+                            if not any(entry.path == p or entry.path.startswith(p + '/') for p in SPECIAL):
+                                walk(entry.path, relative)
+                except (FileNotFoundError, PermissionError):
+                    continue
+        walk(path, virtual)
+        emit(result)
+        return
+    if restricted:
+        raise PermissionError('Virtual system files cannot be read, measured or changed here')
+    if operation == 'size':
+        if not os.path.isdir(path):
+            emit({'bytes': os.stat(path).st_size, 'cached': False})
+            return
+        STATE.mkdir(mode=0o700, parents=True, exist_ok=True)
+        cache = STATE / ('size-' + hashlib.sha256(path.encode()).hexdigest() + '.json')
+        with open(STATE / 'size.lock', 'a') as lock:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                raise ValueError('Another folder size is being calculated; retry shortly')
+            if cache.exists() and time.time() - cache.stat().st_mtime < 300:
+                value = json.loads(cache.read_text()); value['cached'] = True
+            else:
+                result = subprocess.run(['/usr/bin/ionice', '-c', '3', '/usr/bin/nice', '-n', '19',
+                                         '/usr/bin/du', '-sx', '-B1', '--apparent-size', '--', path],
+                                        capture_output=True, text=True, timeout=25)
+                if result.returncode:
+                    raise ValueError('Size unavailable')
+                value = {'bytes': int(result.stdout.split()[0]), 'cached': False, 'measuredAt': int(time.time())}
+                cache.write_text(json.dumps(value)); cache.chmod(0o600)
+            emit(value)
+        return
+    if operation == 'read':
+        if not os.path.isfile(path):
+            raise ValueError('Regular file required')
+        with open(path, 'rb') as stream:
+            shutil.copyfileobj(stream, sys.stdout.buffer)
+        return
+    if path == '/' or path in {'/home', '/etc', '/usr', '/var', '/opt', '/boot', '/root'}:
+        raise PermissionError('Cannot replace or remove a top-level system directory')
+    STATE.mkdir(mode=0o700, parents=True, exist_ok=True)
+    destination = resolve(args['destination']) if operation in {'rename', 'copy'} else None
+    if destination and any(destination == p or destination.startswith(p + '/') for p in SPECIAL):
+        raise PermissionError('Virtual system destination')
+
+    def backup():
+        if not os.path.exists(path):
+            return
+        # Reject broad destructive directory operations instead of making unbounded copies.
+        if os.path.isdir(path):
+            raise ValueError('Delete folders only when empty; move folders with Rename')
+        if os.stat(path).st_size > 64 * 1024 * 1024:
+            raise ValueError('Back up large files before replacing them outside this editor')
+        location = Path(tempfile.mkdtemp(prefix='backup-', dir=STATE))
+        shutil.copy2(path, location / 'content')
+        (location / 'metadata.json').write_text(json.dumps({'path': path, 'actor': actor}))
+
+    if operation == 'write':
+        previous = os.stat(path) if os.path.exists(path) else None
+        if previous:
+            backup()
+        fd, temporary = tempfile.mkstemp(prefix='.vip-write-', dir=os.path.dirname(path))
+        try:
+            with os.fdopen(fd, 'wb') as stream:
+                shutil.copyfileobj(sys.stdin.buffer, stream)
+                stream.flush(); os.fsync(stream.fileno())
+            parent = os.stat(os.path.dirname(path))
+            os.chown(temporary, previous.st_uid if previous else parent.st_uid, previous.st_gid if previous else parent.st_gid)
+            os.chmod(temporary, stat.S_IMODE(previous.st_mode) if previous else 0o644)
+            os.replace(temporary, path)
+        finally:
+            if os.path.exists(temporary): os.unlink(temporary)
+    elif operation == 'mkdir':
+        parent = os.stat(os.path.dirname(path))
+        os.mkdir(path, 0o755); os.chown(path, parent.st_uid, parent.st_gid)
+    elif operation == 'delete':
+        if os.path.isdir(path): os.rmdir(path)
+        else: backup(); os.unlink(path)
+    elif operation in {'rename', 'copy'}:
+        if os.path.lexists(destination): raise ValueError('Destination already exists')
+        if operation == 'rename': os.rename(path, destination)
+        else: shutil.copy2(path, destination); info=os.stat(path); os.chown(destination, info.st_uid, info.st_gid)
+    elif operation == 'chmod':
+        mode = args.get('mode', '')
+        if not re.fullmatch(r'[0-7]{3}', str(mode)): raise ValueError('Invalid mode')
+        os.chmod(path, int(str(mode), 8))
+    with open(STATE / 'audit.jsonl', 'a') as log:
+        log.write(json.dumps({'time': int(time.time()), 'actor': actor, 'operation': operation, 'path': path, 'destination': destination}) + '\n')
+    for cached in STATE.glob('size-*.json'): cached.unlink(missing_ok=True)
+    emit(metadata(destination or path, (args.get('destination') or virtual).strip('/')) if operation != 'delete' else True)
+
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception as error:
+        print(str(error), file=sys.stderr)
+        sys.exit(1)

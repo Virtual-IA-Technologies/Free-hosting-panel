@@ -22,9 +22,63 @@ if (empty($_SESSION['userContext']) || empty($_SESSION['user'])) {
 $viaAdmin = $_SESSION['userContext'] === 'admin' && empty($_SESSION['look']);
 // A failed asset must leave the native panel accessible instead of an endless loader.
 echo '<script>window.vipBootTimer=setTimeout(function(){document.body.classList.add("vip-native-fallback")},8000);</script>';
-$viaContext = ['admin' => $viaAdmin, 'user' => (string) $_SESSION['user'], 'csrfToken' => (string) ($_SESSION['token'] ?? '')] + $viaOptions;
+$viaEffectiveUser = $_SESSION['userContext'] === 'admin' && !empty($_SESSION['look']) ? $_SESSION['look'] : $_SESSION['user'];
+$viaContext = ['admin' => $viaAdmin, 'user' => (string) $viaEffectiveUser, 'csrfToken' => (string) ($_SESSION['token'] ?? '')] + $viaOptions;
+$viaContext['rootFiles'] = $viaAdmin && is_file('/usr/local/lib/virtualia-root-files/enabled');
+$viaContext['folderSizes'] = is_file('/usr/local/lib/virtualia-root-files/enabled');
+if ($viaAdmin) {
+    $viaPreviews = json_decode(@file_get_contents('/usr/local/lib/virtualia-preview/routes.json') ?: '{}', true);
+    $viaContext['previewRoutes'] = is_array($viaPreviews) ? $viaPreviews : [];
+}
 $viaContext['phpmyadminAlias'] = (string) ($_SESSION['DB_PMA_ALIAS'] ?? 'phpmyadmin');
 $viaPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+if ($_SESSION['userContext'] === 'admin' && defined('HESTIA_CMD') && in_array(rtrim((string) $viaPath, '/'), ['/list/user', '/list/web'], true)) {
+    $viaFileUsersOutput = [];
+    exec(HESTIA_CMD . 'v-list-users json', $viaFileUsersOutput, $viaFileUsersStatus);
+    $viaFileUsers = $viaFileUsersStatus === 0 ? json_decode(implode("\n", $viaFileUsersOutput), true) : null;
+    if (is_array($viaFileUsers)) {
+        $viaContext['fileAdminUser'] = (string) $_SESSION['user'];
+        $viaContext['fileAccounts'] = [];
+        foreach ($viaFileUsers as $viaFileUser => $viaFileInfo) {
+            if (preg_match('/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,31}$/D', (string) $viaFileUser)) {
+                $viaContext['fileAccounts'][] = ['user' => (string) $viaFileUser, 'name' => (string) ($viaFileInfo['NAME'] ?? $viaFileUser)];
+            }
+        }
+    }
+}
+// Inventory is read only, administrator-only and queried only on the web list.
+if ($viaAdmin && rtrim((string) $viaPath, '/') === '/list/web' && defined('HESTIA_CMD') && ($_GET['vip_scope'] ?? '') !== 'account') {
+    $viaInventory = ['rows' => [], 'failedAccounts' => 0, 'available' => false];
+    $viaUsers = $viaFileUsers ?? null;
+    if (is_array($viaUsers)) {
+        $viaInventory['available'] = true;
+        foreach ($viaUsers as $viaOwner => $viaOwnerInfo) {
+            if (!preg_match('/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,31}$/D', (string) $viaOwner)) {
+                $viaInventory['failedAccounts']++;
+                continue;
+            }
+            $viaWebOutput = [];
+            exec(HESTIA_CMD . 'v-list-web-domains ' . escapeshellarg((string) $viaOwner) . ' json', $viaWebOutput, $viaWebStatus);
+            $viaDomains = $viaWebStatus === 0 ? json_decode(implode("\n", $viaWebOutput), true) : null;
+            if (!is_array($viaDomains)) {
+                $viaInventory['failedAccounts']++;
+                continue;
+            }
+            foreach ($viaDomains as $viaDomain => $viaDomainInfo) {
+                $viaInventory['rows'][] = [
+                    'domain' => (string) $viaDomain, 'owner' => (string) $viaOwner,
+                    'ownerName' => (string) ($viaOwnerInfo['NAME'] ?? $viaOwner),
+                    'aliases' => (string) ($viaDomainInfo['ALIAS'] ?? ''),
+                    'ip' => (string) ($viaDomainInfo['IP'] ?? ''),
+                    'ssl' => ($viaDomainInfo['SSL'] ?? '') === 'yes',
+                    'suspended' => ($viaDomainInfo['SUSPENDED'] ?? '') === 'yes',
+                    'disk' => (string) ($viaDomainInfo['U_DISK'] ?? '0'),
+                ];
+            }
+        }
+    }
+    $viaContext['domainsInventory'] = $viaInventory;
+}
 if ($viaAdmin && in_array(rtrim((string) $viaPath, '/'), ['/list/user', '/list/server'], true)) {
     $viaMemory = [];
     foreach (file('/proc/meminfo', FILE_IGNORE_NEW_LINES) ?: [] as $viaLine) {
