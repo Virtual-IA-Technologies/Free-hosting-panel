@@ -1,5 +1,10 @@
 # Estado y continuidad — VIP
 
+## Entrega 1.3.7 — zonas DNS administrativas
+
+- Inventario global de zonas con propietario, registros, TTL, SOA y filtros; creación y edición mediante formularios nativos de la cuenta propietaria.
+- Validado en sesión administrativa real: cuatro zonas visibles, salto al editor nativo y aislamiento al entrar en una cuenta. Sin sondeos ni servicios nuevos.
+
 ## Entrega 1.3.6 — métricas sin lecturas duplicadas
 
 - La barra y el inicio comparten la instantánea de memoria, disco y carga por petición. No se añaden consultas SQL, tablas, archivos de caché, sondeos ni servicios.

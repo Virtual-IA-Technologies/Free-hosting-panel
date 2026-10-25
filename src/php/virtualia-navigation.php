@@ -39,7 +39,7 @@ if ($viaAdmin) {
 }
 $viaContext['phpmyadminAlias'] = (string) ($_SESSION['DB_PMA_ALIAS'] ?? 'phpmyadmin');
 $viaPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
-if ($viaAdmin && defined('HESTIA_CMD') && in_array(rtrim((string) $viaPath, '/'), ['/list/user', '/list/web', '/list/mail', '/list/db', '/list/cron', '/list/key', '/list/stats'], true)) {
+if ($viaAdmin && defined('HESTIA_CMD') && in_array(rtrim((string) $viaPath, '/'), ['/list/user', '/list/web', '/list/mail', '/list/db', '/list/dns', '/list/cron', '/list/key', '/list/stats'], true)) {
     $viaFileUsersOutput = [];
     exec(HESTIA_CMD . 'v-list-users json', $viaFileUsersOutput, $viaFileUsersStatus);
     $viaFileUsers = $viaFileUsersStatus === 0 ? json_decode(implode("\n", $viaFileUsersOutput), true) : null;
@@ -131,6 +131,23 @@ if ($viaAdmin && rtrim((string) $viaPath, '/') === '/list/web' && defined('HESTI
         }
     }
     $viaContext['domainsInventory'] = $viaInventory;
+}
+// DNS zone metadata only; native owner sessions handle record edits and CSRF.
+if ($viaAdmin && defined('HESTIA_CMD') && rtrim((string)$viaPath, '/') === '/list/dns'
+    && ($_GET['vip_scope'] ?? '') !== 'account' && empty($_GET['domain'])) {
+    $viaDns=['rows'=>[], 'available'=>is_array($viaFileUsers ?? null), 'failedAccounts'=>0];
+    foreach (($viaFileUsers ?? []) as $viaOwner=>$viaInfo) {
+        if (!preg_match('/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,31}$/D',(string)$viaOwner)) continue;
+        $output=[];$status=1;
+        exec(HESTIA_CMD.'v-list-dns-domains '.escapeshellarg((string)$viaOwner).' json',$output,$status);
+        $zones=$status===0?json_decode(implode("\n",$output),true):null;
+        if (!is_array($zones)) {$viaDns['failedAccounts']++;continue;}
+        foreach ($zones as $domain=>$zone) $viaDns['rows'][]=[
+            'domain'=>(string)$domain,'owner'=>(string)$viaOwner,'ownerName'=>(string)($viaInfo['NAME']??$viaOwner),
+            'records'=>(string)($zone['RECORDS']??'0'),'ttl'=>(string)($zone['TTL']??''),
+            'soa'=>(string)($zone['SOA']??''),'suspended'=>($zone['SUSPENDED']??'')==='yes'];
+    }
+    $viaContext['dnsInventory']=$viaDns;
 }
 // Query only the service being viewed. Never send passwords, hashes or SSO keys.
 if ($viaAdmin && defined('HESTIA_CMD') && in_array(rtrim((string)$viaPath, '/'), ['/list/mail','/list/db'], true)

@@ -55,10 +55,10 @@
   nativeLinks.forEach(a => {
     const u = new URL(a.href, location.origin);
     const part = u.pathname.split('/').filter(Boolean)[1]?.toUpperCase();
-    const ownLabels={WEB:'Dominios de esta cuenta',MAIL:'Correo de esta cuenta',DB:'Bases de datos de esta cuenta'};
+    const ownLabels={DNS:'Zonas DNS de esta cuenta',WEB:'Dominios de esta cuenta',MAIL:'Correo de esta cuenta',DB:'Bases de datos de esta cuenta'};
     if (labels[part]) hostingGroup[1].push([context.admin&&ownLabels[part]?ownLabels[part]:labels[part][0], context.admin&&ownLabels[part]?u.pathname+'?vip_scope=account':u.pathname + u.search, labels[part][1], a.querySelector('.main-menu-stats')?.textContent.replace(/\s+/g, ' ').trim() || 'Administrar este servicio']);
   });
-  if(context.admin)for(const [path,label] of [['/list/web/','Dominios'],['/list/mail/','Correo electrónico'],['/list/db/','Bases de datos']]){
+  if(context.admin)for(const [path,label] of [['/list/dns/','Zonas DNS'],['/list/web/','Dominios'],['/list/mail/','Correo electrónico'],['/list/db/','Bases de datos']]){
     const item=hostingGroup[1].find(x=>new URL(x[1],location.origin).pathname===path);
     if(item)groups[0][1].push([label,path,item[2],'Recursos de todas las cuentas y su propietario']);
   }

@@ -1,5 +1,9 @@
 # Cambios
 
+## 1.3.7 — 2026-10-24
+
+- Inventario DNS administrativo de todas las cuentas, con propietario, registros, TTL, SOA y filtros. Edición y creación mediante los formularios nativos de la cuenta propietaria; clientes conservan su aislamiento. Sin sondeos ni servicios adicionales.
+
 ## 1.3.6 — 2026-10-24
 
 - Inicio y barra administrativa reutilizan la misma instantánea de memoria, carga y disco por petición. Elimina lecturas redundantes sin añadir procesos, cachés persistentes ni cambios de permisos.

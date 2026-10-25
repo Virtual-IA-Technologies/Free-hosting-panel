@@ -6,7 +6,7 @@ Login grafito con usuario y contraseña juntos, recuperación nativa y [servicio
 
 La versión 1.3.5 incorpora [pestañas de configuración](docs/configuration-tabs.md) y un [gestor administrativo opcional](docs/software-manager.md) para versiones, PHP y extensiones. El gestor tiene instalación separada y conserva autenticación, roles y CSRF nativos. Su estado de validación y publicación figura en [continuidad](docs/PENDIENTES_Y_CONTINUIDAD.md).
 
-La versión 1.3.6 reutiliza las métricas de memoria, carga y disco entre la barra y el inicio en cada petición. Para comprobar las aplicaciones alojadas, consultar la [revisión de despliegue](docs/deployment-review.md).
+La versión 1.3.7 reúne las zonas DNS de todas las cuentas para el administrador, con propietario, filtros y enlaces al editor nativo. Conserva las métricas compartidas de servidor de 1.3.6. Para comprobar las aplicaciones alojadas, consultar la [revisión de despliegue](docs/deployment-review.md).
 
 ## Instalación
 
