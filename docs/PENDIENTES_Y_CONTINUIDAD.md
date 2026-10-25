@@ -1,5 +1,12 @@
 # Estado y continuidad — VIP
 
+## Entrega 1.3.6 — métricas sin lecturas duplicadas
+
+- La barra y el inicio comparten la instantánea de memoria, disco y carga por petición. No se añaden consultas SQL, tablas, archivos de caché, sondeos ni servicios.
+- Guía genérica de revisión de despliegue en `deployment-review.md`. La comprobación de las aplicaciones alojadas queda separada de la validación del panel; su inventario y resultados son privados.
+- La protección HTTP de artefactos privados necesita configuración explícita por instalación; el tema no modifica vhosts de clientes.
+- Validado el instalador y la sintaxis PHP; desplegado con respaldo y configuración conservada. Cinco vistas administrativas reales comprobadas; métricas coherentes y servicios en móvil sin errores. Consultar el tag y CI para confirmar publicación.
+
 ## Entrega 1.3.5 — administración y respaldos
 
 - Implementados y desplegados módulos opcionales de correo/SQL y políticas de respaldo. PHP compartido mantiene los procesos externos bloqueados; tickets consumidos por un puente exclusivo de loopback al PHP nativo de Hestia.

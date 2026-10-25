@@ -1,3 +1,9 @@
+# Validación 1.3.6
+
+Dos pruebas del instalador y revisión de archivos publicables correctas; sintaxis PHP validada en el servidor. Despliegue con respaldo y configuración existente conservada; el PHP instalado coincide con la fuente. En sesión administrativa real se comprobaron cuentas, dominios, correo, bases y servicios. Las métricas del inicio y la barra coinciden. Servicios se abre mediante su enlace nativo con Referer y protección CSRF conservados; no mediante navegación directa sin contexto. Comprobación móvil de servicios sin desbordamiento ni errores JavaScript/HTTP.
+
+No se añaden tablas, cachés persistentes, dependencias ni procesos. Las pruebas de las aplicaciones alojadas se registran privadamente y no certifican todos los flujos de negocio ni aceptación de emisiones por terceros.
+
 # Validación 1.3.1
 
 Sesión administrativa real: acceso desde Actualizaciones de Hestia al gestor, nueve grupos de paquetes, PHP y extensiones, móvil y cero errores JavaScript. Correspondencia de recursos desplegados y compilados comprobada; no se aplicaron actualizaciones.

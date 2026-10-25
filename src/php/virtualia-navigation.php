@@ -31,7 +31,7 @@ if ($viaAdmin) {
     $viaPreviews = json_decode(@file_get_contents('/usr/local/lib/virtualia-preview/routes.json') ?: '{}', true);
     $viaContext['previewRoutes'] = is_array($viaPreviews) ? $viaPreviews : [];
     $viaQuickMem=[];
-    foreach (@file('/proc/meminfo',FILE_IGNORE_NEW_LINES) ?: [] as $line) if(preg_match('/^(MemTotal|MemAvailable):\s+(\d+)/',$line,$match))$viaQuickMem[$match[1]]=(int)$match[2];
+    foreach (@file('/proc/meminfo',FILE_IGNORE_NEW_LINES) ?: [] as $line) if(preg_match('/^(MemTotal|MemAvailable|MemFree|Cached|Buffers|SwapTotal|SwapFree):\s+(\d+)/',$line,$match))$viaQuickMem[$match[1]]=(int)$match[2];
     $viaContext['serverQuick']=['load'=>sys_getloadavg()?:[],'memoryTotal'=>$viaQuickMem['MemTotal']??0,
         'memoryAvailable'=>$viaQuickMem['MemAvailable']??0,'diskTotal'=>@disk_total_space('/')?:0,'diskFree'=>@disk_free_space('/')?:0];
     $viaContext['mailAdmin']=is_file('/usr/local/lib/virtualia-mail-admin/enabled');
@@ -169,14 +169,10 @@ if ($viaAdmin && defined('HESTIA_CMD') && in_array(rtrim((string)$viaPath, '/'),
     $viaContext[$viaService==='mail'?'mailInventory':'databasesInventory']=$viaServiceInventory;
 }
 if ($viaAdmin && in_array(rtrim((string) $viaPath, '/'), ['/list/user', '/list/server'], true)) {
-    $viaMemory = [];
-    foreach (file('/proc/meminfo', FILE_IGNORE_NEW_LINES) ?: [] as $viaLine) {
-        if (preg_match('/^(MemTotal|MemAvailable|MemFree|Cached|Buffers|SwapTotal|SwapFree):\s+(\d+)/', $viaLine, $viaMatch)) {
-            $viaMemory[$viaMatch[1]] = (int) $viaMatch[2];
-        }
-    }
-    $viaTotal = @disk_total_space('/');
-    $viaFree = @disk_free_space('/');
+    // Reuse this request's toolbar snapshot: no duplicate proc reads or disk probes.
+    $viaMemory = $viaQuickMem;
+    $viaTotal = $viaContext['serverQuick']['diskTotal'];
+    $viaFree = $viaContext['serverQuick']['diskFree'];
     $viaNetwork = [];
     foreach (@file('/proc/net/dev', FILE_IGNORE_NEW_LINES) ?: [] as $viaLine) {
         if (preg_match('/^\s*([^:]+):\s*(.+)$/', $viaLine, $viaMatch) && trim($viaMatch[1]) !== 'lo') {
@@ -188,7 +184,7 @@ if ($viaAdmin && in_array(rtrim((string) $viaPath, '/'), ['/list/user', '/list/s
     }
     $viaContext['server'] = [
         'host' => gethostname(),
-        'load' => sys_getloadavg() ?: null,
+        'load' => $viaContext['serverQuick']['load'] ?: null,
         'memoryTotal' => $viaMemory['MemTotal'] ?? null,
         'memoryAvailable' => $viaMemory['MemAvailable'] ?? null,
         'swapTotal' => $viaMemory['SwapTotal'] ?? null,

@@ -6,6 +6,8 @@ Login grafito con usuario y contraseña juntos, recuperación nativa y [servicio
 
 La versión 1.3.5 incorpora [pestañas de configuración](docs/configuration-tabs.md) y un [gestor administrativo opcional](docs/software-manager.md) para versiones, PHP y extensiones. El gestor tiene instalación separada y conserva autenticación, roles y CSRF nativos. Su estado de validación y publicación figura en [continuidad](docs/PENDIENTES_Y_CONTINUIDAD.md).
 
+La versión 1.3.6 reutiliza las métricas de memoria, carga y disco entre la barra y el inicio en cada petición. Para comprobar las aplicaciones alojadas, consultar la [revisión de despliegue](docs/deployment-review.md).
+
 ## Instalación
 
 La [administración opcional de correo y SQL](docs/mail-and-sql-admin.md) añade acceso global a phpMyAdmin, usuarios y permisos, bandejas administrativas, cola, seguimiento, rebotes y relayers. Cuentas muestra dominio, IP, cuota y consumo; la barra del administrador muestra carga, RAM y disco libre. Las consultas se ejecutan al abrir la vista o solicitar la herramienta.

@@ -1,5 +1,10 @@
 # Cambios
 
+## 1.3.6 — 2026-10-24
+
+- Inicio y barra administrativa reutilizan la misma instantánea de memoria, carga y disco por petición. Elimina lecturas redundantes sin añadir procesos, cachés persistentes ni cambios de permisos.
+- Guía de revisión de despliegue: DNS, TLS, sesiones, documentos, integraciones y protección de artefactos privados; distingue lectura, generación local y emisión real.
+
 ## 1.3.5 — 2026-10-24
 
 - Respaldos opcionales por cuentas/contenido, destino local o Rclone, múltiples horarios y retención configurable; inventario, descarga, auditoría y cola sin servicio residente nuevo.
