@@ -2,6 +2,8 @@
 
 ## 1.3.9 — 2026-11-01
 
+- Documentación de migración: comprobación de permisos públicos para Apache/Nginx/PHP-FPM y cobertura real de `user_dir/` en los respaldos nativos Hestia 1.10.5.
+
 - Retira el rótulo redundante del acceso, conservando el formulario y la autenticación nativos.
 - Aclara cómo proteger aplicaciones y documentos fuera de la estructura web nativa durante una migración; la distribución sigue sin contener datos de servidores.
 

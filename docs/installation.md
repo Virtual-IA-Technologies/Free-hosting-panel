@@ -13,6 +13,8 @@ Para que el administrador recorra el servidor desde `/`, instala por separado el
 
 El certificado del panel, los certificados de sitios y los certificados de correo tienen ámbitos diferentes. Un certificado para el hostname no cubre automáticamente los dominios de las cuentas. Configura SSL de cada sitio en sus opciones web. No retires un sitio usado para emitir o renovar certificados sin preparar antes un método de renovación independiente.
 
+Al trasladar aplicaciones de otro panel, comprobar permisos de recorrido de cada módulo público y lectura de sus CSS/JavaScript por el usuario del servidor web. PHP-FPM puede leer un archivo como propietario mientras Apache o Nginx devuelve 403 para su directorio o sus recursos. Revisar `.htaccess`, rutas API y pestañas mediante navegador autenticado; aplicar permisos puntuales y conservar privadas las configuraciones, credenciales y auditorías.
+
 ## 2. Descargar e instalar
 
 En el servidor, con una cuenta que pueda usar `sudo`:
