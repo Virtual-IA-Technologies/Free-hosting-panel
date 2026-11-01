@@ -36,6 +36,8 @@ Las copias históricas del servidor anterior no aparecen automáticamente en el 
 
 ## Qué incluye y cómo recuperar
 
+Los respaldos nativos siguen la estructura de alojamiento de Hestia. Antes de migrar aplicaciones con directorios privados, releases o documentos fuera de `~/web`, comprobar el contenido real del archivo: «cuenta completa» no garantiza incluir cualquier carpeta del home. Preparar una copia adicional de esos directorios, sus bases y usuarios SQL, servicios y configuración privada. Mantenerla fuera del servidor y comprobar hashes, integridad y una restauración aislada antes de borrar el origen. No incluir estos datos en el repositorio público del panel.
+
 | Contenido | Formato y recuperación |
 | --- | --- |
 | Cuenta completa | Formato nativo Hestia, con metadatos y exclusiones nativas; restaurar con las herramientas nativas de Hestia. |

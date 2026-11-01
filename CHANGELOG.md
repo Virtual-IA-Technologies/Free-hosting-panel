@@ -1,5 +1,10 @@
 # Cambios
 
+## 1.3.9 — 2026-11-01
+
+- Retira el rótulo redundante del acceso, conservando el formulario y la autenticación nativos.
+- Aclara cómo proteger aplicaciones y documentos fuera de la estructura web nativa durante una migración; la distribución sigue sin contener datos de servidores.
+
 ## 1.3.8 — 2026-10-25
 
 - Firewall con pestañas de bloqueos, lista negra/blanca web, motivo y fecha, historial y límites independientes de solicitudes y conexiones TCP; comprobación cron opcional, sin instalar CSF.

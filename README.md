@@ -130,4 +130,6 @@ Los enlaces de recursos con parámetros incluyen el token de la sesión nativa. 
 
 ## Publicación y licencia
 
+La [guía de respaldos](docs/backups.md) incluye la comprobación de aplicaciones y documentos fuera del directorio web nativo antes de migrar o reinstalar un servidor.
+
 Repositorio público: [Free-hosting-panel](https://github.com/Virtual-IA-Technologies/Free-hosting-panel). Código GPL-3.0-or-later; la marca y los logos Virtual IA identifican a su titular y no conceden derechos de marca. HestiaCP conserva sus avisos y licencia. No se incluyen credenciales, llaves ni datos de un despliegue. Consulta la [guía de instalación](docs/installation.md), [seguridad](SECURITY.md) y [contribuciones](CONTRIBUTING.md).
